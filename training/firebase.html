@@ -1,0 +1,49 @@
+<html>
+  <head>
+	<!--include first-->
+    <script src='https://cdn.firebase.com/js/client/1.0.15/firebase.js'></script>
+    <script src='https://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js'></script>
+  </head>
+  <body>
+	<div id='messagesDiv'></div>
+    <input type='text' id='nameInput' placeholder='Name'>
+    <input type='text' id='messageInput' placeholder='Message'>
+    <script>
+		// json data object declaration (second thing to do)
+		var myDataRef = new Firebase('https://tdbgao6ofo0.firebaseio-demo.com/');
+		$('#messageInput').keypress( // whenever any key is pressed
+			function (e)
+			{
+				if (e.keyCode == 13) // 13 is carriage return
+				{
+				  var name = $('#nameInput').val(); // value from each input id
+				  var text = $('#messageInput').val();
+				  //myDataRef.set('User ' + name + ' says ' + text); // writing data
+				  //myDataRef.set({name: name, text: text}); // writing object
+				  myDataRef.push({name: name, text: text}); // create tree like structure to stack more info
+				  /*
+					main obj
+						- secondary obj
+							= fields
+						- secondary obj
+							= fields
+				  */
+				  $('#messageInput').val(''); // value in the message input turns into blank
+				}
+			}
+		);
+		myDataRef.on('child_added', // receive chat messages
+			function(snapshot)
+			{
+				var message = snapshot.val();
+				displayChatMessage(message.name, message.text);
+			}
+		);
+		function displayChatMessage(name, text)
+		{
+			$('<div/>').text(text).prepend($('<em/>').text(name+': ')).appendTo($('#messagesDiv'));
+			$('#messagesDiv')[0].scrollTop = $('#messagesDiv')[0].scrollHeight;
+		};
+    </script>
+  </body>
+</html>
