@@ -1,5 +1,5 @@
-Material Sales Department Web Application
-=========================================
+Material Flow Sales Department Web Application
+==============================================
 Front-end development using Polymer, JSON(Firebase), HTML, CSS, and Javascript
 
 Developer: Jong Seong Lee
