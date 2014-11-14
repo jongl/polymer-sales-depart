@@ -1,0 +1,367 @@
+<link rel="import" href="../core-field/core-field.html">
+<link rel="import" href="../core-icon/core-icon.html">
+<link rel="import" href="../core-input/core-input.html">
+<link rel="import" href="../core-icons/core-icons.html">
+ 
+<polymer-element name="sales-depart">
+ 
+  <template>
+    <style>
+      /* common attributes */
+      :host {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        box-sizing: border-box;
+        background-color: rgb(180, 180, 180);
+        font-family: 'Arial';
+      }
+      li {
+        list-style: none;
+      }
+      li:before {
+        content: "• ";
+        color: rgb(2, 98, 184);
+      }
+      a, .submenu {
+        text-decoration: none;
+        color: black;
+        cursor: pointer;
+      }
+      a:hover, .submenu:hover {
+        font-weight: bold;
+        color: rgb(2, 98, 184);
+      }
+      img:hover {
+      	opacity: 0.6;
+      }
+      hr {
+        width: 90%;
+        border: 0;
+   			height: 1px;
+    		background-color: rgb(128, 128, 128);
+      }
+      ul {
+      	-webkit-padding-start: 0px;
+        -webkit-margin-before: 8px;
+        line-height: 18px;
+      }
+      
+      /* font declarations */
+      @font-face {
+        font-family: 'Impact';
+        src: url('http://testmf.esy.es/fonts/impact.eot');
+        src: url('http://testmf.esy.es/fonts/impact.woff') format('woff'),
+          	 url('http://testmf.esy.es/fonts/impact.ttf') format('truetype'),
+          	 url('http://testmf.esy.es/fonts/impact.svg') format('svg');
+        font-weight: normal;
+        font-style: normal;
+			}
+      
+      /* font specific */
+      #sidebarTitle {
+        font-family: 'Impact';
+        font-size: 23.8px;
+        text-transform: uppercase;
+        color: rgb(2, 98, 184); 
+      }
+      .mainPage_containerTitle {
+        font-family: 'Impact';
+        font-size: 24px;
+        text-transform: uppercase;
+      }
+      .sidebarMenuTitle {
+        font-family: 'Impact';
+        font-size: 24px;
+        text-transform: uppercase;
+        cursor: pointer;
+      }
+      .sidebarMenuTitle:before {
+        padding: 0px 6px;
+				content: "+";
+				color: white;
+				font-size: 20px;
+				background-color: rgb(1, 50, 94);
+				margin-right: 8px;
+      }
+      .sidebarMenuTitle:hover:before {
+        background-color: rgb(223, 28, 38) !important;
+      }
+      .mainPage_containerCount {
+        font-weight: bold;
+        font-size: 40px;
+        color: rgb(2, 98, 184); 
+      }
+      .mainPage_containerCount:hover {
+      	color: rgb(223, 28, 38);
+      }
+            
+      /* side menu */
+      
+      #sideMenu {
+        position: absolute;
+        width: 234px;
+        height: 100%;
+        box-shadow: 4px 0px 10px rgb(128, 128, 128);
+        left: 0px;
+        top: 0px;
+        background-color: rgb(255, 255, 255);
+      }
+      #sideWrapper {
+        height: 100%;
+        padding: 20px;
+      }
+      #searchField {
+        margin-top: 12px;
+        border: 6px solid rgb(2, 98, 184);
+        width: 182px;
+        font-size: 14px;
+        height: 32px;
+      }
+      #searchFieldPlaceholder {
+        padding-left: 8px;
+      }
+      .menuList {
+        margin-top: 18px;
+      }
+      .sidebarMenuUl {
+        margin-left: 10px;
+      }
+      .sidebarMenuUl li:before {
+        content: none;
+      }
+      
+      /* main page */
+      #mainBanner {
+        position: absolute;
+        width: 748px;
+        height: 257px;
+        box-shadow: 0px 0px 18px rgb(128, 128, 128);
+        left: 252px;
+        top: 18px;
+        background-color: white;
+      }
+      .mainPage_container { /* need to merge */
+        position: absolute;
+        width: 365px;
+        box-shadow: 0px 0px 18px rgb(128, 128, 128);
+        border-top-width: 8px;
+        border-top-style: solid;
+        border-top-color: rgb(2, 98, 184);
+        background-color: rgb(255, 255, 255);
+      }
+      .mainPage_container_wrapperTop {
+        margin: 18px;
+      	width: 100%;
+      }
+      .mainPage_container_img {
+        float: left;
+        width: 30%;
+        text-align: center;
+      }
+      .mainPage_container_menu {
+        float: right;
+        width: 66%;
+        font-size: 14px;
+      }
+      .mainPage_container_wrapperBottom {
+        width: 100%;
+        background-color: rgb(230, 230, 230);
+        padding: 18px 0px 18px 0px;
+        text-align: center;
+      }
+      .mainPage_container_hr {
+        margin-bottom: 10px;
+      }
+    </style>
+    <!--sidebar starts-->
+    <core-card id="sideMenu" layout vertical>
+      <div id="sideWrapper">
+        <div id="mainLogo" onclick="switchPage('home', 'none')">
+          <img src="{{imgs.side_graphic_mainLogo}}"></img>
+        </div>
+        <span id="sidebarTitle">
+          Sales Department
+        </span>
+ 
+        <core-field id="searchField" icon="search" theme="core-light-theme" center horizontal layout>
+          <core-input willvalidate placeholder="Search" id="searchFieldPlaceholder" flex></core-input>
+          <core-icon icon="search" id="core_icon"></core-icon>
+        </core-field>
+      
+				<!--repeat menu-->
+      	<template repeat="{{menu in menuContent}}">
+          <div class="menuList">
+            <span class="sidebarMenuTitle" onclick="switchPage('{{menu.location}}', 'none')">{{menu.title}}</span>
+            <ul class="sidebarMenuUl">
+              <template repeat="{{submenu in menu.sub}}"> 
+                <li class="submenu" onclick="switchPage('{{menu.location}}', '{{submenu.location}}')">{{submenu.title}}</li>
+              </template>
+            </ul>
+          </div>
+      	</template>
+      	<!--repeat menu ends-->
+    	</div>
+    </core-card>
+  	<!--sidebar ends-->
+  
+		<!--main page starts-->
+    <template if="{{currPg.main == 'home'}}" onload="mainPageContainer_reset()">
+      <core-card id="mainBanner" layout vertical><img src="{{imgs.home_graphic_mainBanner}}"></core-card>
+      
+      <!--repeats container boxes-->
+      <template repeat="{{menu in menuContent}}">
+        <core-card id="{{getHomeBoxIdName}}{{getHomeBoxIter}}" class="mainPage_container" onload="mainPageContainer()" layout vertical>
+          <div class="mainPage_container_wrapperTop">
+            <div class="mainPage_container_img">
+              <img src="{{menu.image}}"></img>
+            </div>
+            <div class="mainPage_container_menu">
+              <span class="mainPage_containerTitle">{{menu.title}}</span>
+              <ul>
+                <template repeat="{{submenu in menu.sub}}">
+                	<li class="submenu" onclick="switchPage('{{menu.location}}', '{{submenu.location}}')">{{submenu.title}}</li>
+                </template>
+              </ul>
+            </div>
+          </div>
+          <div class="mainPage_container_wrapperBottom">
+            <template repeat="{{info in menu.info}}">
+            	{{info.title}}<br/>
+            	<span class="mainPage_containerCount">{{info.symbol}}{{info.number}}</span>
+            	<hr class="mainPage_container_hr">
+            </template>
+          </div>
+        </core-card>
+  		</template>
+  	</template>
+		<!--main page ends-->
+		
+		<!--inventory-->
+		<template if="{{currPg.main == 'inventory'}}">
+			<core-card id="mainBanner" layout vertical><img src="{{imgs.home_graphic_mainBanner}}"></core-card>
+		</template>
+ 
+		<template if="{{currPg.main == 'orders'}}"><div>order page</div></template>
+  </template>
+	
+	<script src='https://cdn.firebase.com/js/client/1.0.15/firebase.js'></script>
+	<script src='https://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js'></script>
+ 
+  <script>
+    // firebase json
+    // var myDataref = new Firebase('https://resplendent-torch-6894.firebaseio.com/');
+       
+    // switch to the parameter
+		function switchPage(mainPg, subPg) {
+    	var elem = document.querySelector("sales-depart").currPg;
+      elem.main = mainPg;
+      elem.sub = subPg;
+    }
+    
+    var mainPageContainer_iter_width = 0;
+    var mainPageContainer_iter_height = 0;
+    
+    function mainPageContainer_reset() {
+    	mainPageContainer_iter_width = 0;
+      mainPageContainer_iter_height = 0;
+    }
+    
+    function mainPageContainer() {
+      var elem = document.querySelector("sales-depart").homeBox;
+      
+      var iter = elem.iter;
+      var idName = elem.idName;
+      var originW = elem.originW;
+      var originH = elem.originH;
+      var margin = elem.margin;
+      var width = elem.width;      
+      
+      document.getElementById(idName + iter).style.display = mainPageContainer_width(originW, width, margin);
+    }
+    
+    function mainPageContainer_width(origin, width, margin) {
+      var ret;
+      if (mainPageContainer_iter == 0) {
+      	ret = origin + margin;      
+      } else {
+      	ret = origin + width + margin;
+      }
+      mainPageContainer_iter_width ++;
+      return ret;
+    }
+    
+    function mainPageContainer_height(origin, height, margin) {
+   		var ret;
+      var iter = marginPageContainer_iter / 3;
+      
+      if (iter == 0) {
+        ret = origin + margin;
+      } else {
+        ret = (iter + 1) * (height + margin) + origin;
+      }
+      mainPageContainer_iter_height ++;
+      return ret;
+    }
+    
+    Polymer('sales-depart', {
+      ready: function() {
+        this.currPg = { main: 'home', sub: 'none' };
+ 
+        this.path = {
+          master: 'http://testmf.esy.es/',
+          img: 'images/'
+        };
+        
+        // img locations
+        this.imgs = {
+          side_graphic_mainLogo: this.path.master + this.path.img + 'graphic_matflow_logo_182.png',
+          home_graphic_mainBanner: this.path.master + this.path.img + 'graphic_mainPage_salesDepart.png',
+          home_icon_viewOrders: this.path.master + this.path.img + 'graphic_viewOrder.png',
+          home_icon_inventory: this.path.master + this.path.img + 'graphic_inventory.png'
+        };
+        
+        // main page box container
+        this.home_box_iter = 0;
+        this.home_box_id_pre = 'mainPage_container_';
+        
+        this.homeBox = {
+          idName: 'mainPage_container_',
+          iter: 0,
+          margin: 18,
+          width: 365,
+          originW: 252,
+          originH: 293
+        }
+        
+        // menu content for sidebar and main page boxes
+        this.menuContent = [
+          { title: 'Inventory', location: 'inventory', image: this.imgs.home_icon_inventory,
+            sub: [ { title: 'View All Stock Items', location: 'view' },
+                   { title: 'Add a New Stock Item', location: 'add' },
+                   { title: 'Edit / Remove Stock Items', location: 'edit' } ],
+           info: [ { title: 'Total Inventory Count', symbol: '', number: '26,598' },
+          				 { title: 'Total Inventory Cost', symbol: '$', number: '785,386.20' } ]
+          },
+          { title: 'Orders', location: 'orders', image: this.imgs.home_icon_viewOrders,
+          	 sub: [ { title: 'Placeholder', location: 'none' },
+               	    { title: 'Placeholder', location: 'none' },
+                    { title: 'Placeholder', location: 'none' } ],
+            info: [ { title: 'Total Order Counts This Week', symbol: '', number: '568' },
+                    { title: 'Total Sales This Week', symbol: '$', number: '45,658.39' } ]
+          }
+        ];
+      },
+      // get main page box container and increase number by 1
+      get getHomeBoxIter() {
+      	return this.homeBox.iter++; 
+      },
+      
+      get getHomeBoxIdName() {
+      	return this.homeBox.idName;
+    	}
+    });
+ 
+  </script>
+ 
+</polymer-element>

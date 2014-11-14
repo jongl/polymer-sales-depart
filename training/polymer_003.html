@@ -1,0 +1,30 @@
+<link rel="import" href="../polymer/polymer.html">
+
+<polymer-element name="my-element" attributes="test">
+
+  <template>
+    <a on-tap="{{toggle}}">false</a>
+    <template if="{{test == 'home'}}">
+   		true
+ 		</template>
+    
+    <template if="{{test == 'house'}}">
+      <a on-tap="{{toggle}}">toggle works</a>
+ 		</template>
+  </template>
+  
+  <script>
+    
+    Polymer({
+    	test: 'home',
+      toggle: function() {
+        if(this.test == 'home')
+          this.test = 'house';
+        else
+          this.test = 'home';
+      }
+    });
+
+  </script>
+
+</polymer-element>

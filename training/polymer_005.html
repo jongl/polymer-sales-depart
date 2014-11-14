@@ -1,0 +1,151 @@
+<link rel="import" href="../polymer/polymer.html">
+ 
+<polymer-element name="my-element-1" attributes="test" on-keypress="{{keypressHandler}}">
+ 
+  <template>
+    Hello <span style="color:{{nameColor}}">{{name}}</span>
+    <br/>
+    {{value1}} / {{value2}} / {{value3}}
+    <br/>
+    {{foo}} / {{bar}} <button on-click="{{changeFoo}}">foobar</button>
+    <br/>
+    <input type="number" value="{{num}}">
+    {{square}}
+    <br/>
+    <button on-click="{{buttonClick}}">something</button>
+    
+    <br/>
+    <paper-tabs selected="0">
+    	<paper-tab on-tap="{{toggle(2)}}">[click here to toggle]</paper-tab>
+      <paper-tab>dummy</paper-tab>
+    </paper-tabs>
+    
+    
+    <template if="{{test == 1}}">
+      true<br/>
+      <input type="text" id="nameInput">
+      <br/><br/>
+ 
+      
+ 		</template>
+    
+    <template if="{{test == 2}}">
+      <a on-tap="{{toggle(1)}}">[toggle works toggle back]</a>
+ 		</template>
+    
+    <template repeat="{{i in salutations}}">
+      <li>{{i.what}}: <input type="text" value="{{i.who}}"></li>
+    </template>
+    <button on-click="{{updateModel}}">Update model</button>
+    
+    <ul>
+    	<template repeat="{{s in stories}}">
+    	  <li on-click={{selectStory}}>{{s.headline}}</li>
+      </template>
+  	</ul>
+    
+    <template bind="{{person}}">
+      여기서는 template을 특정 object에 연결시켜 사용할 수 있다 {{name}}<br/>
+    </template>
+    <template bind="{{person as p}}">
+      여기서는 template을 특정 object에 연결시켜 사용할 수 있다 {{p.name}}
+    </template>
+    
+    <div class="{{ {active: divTest, big: divTest2 == 'works'} | tokenList}}">works</div>
+    
+    <div style="{{style | styleObject}}">styleObject</div>
+    
+  </template>
+  
+  <script>
+    
+    Polymer('my-element-1', {
+      person: {
+        name: 'Jason'
+      },
+      selectStory: function(e, detail, sender) {
+  			var story = e.target.templateInstance.model.s;
+  			console.log("Clicked " + story.headline);
+  			this.loadStory(story.id); // accessing non-rendered data from the model
+      },
+      ready: function() {
+      	test: 1;
+        
+        this.style = {color: 'red', background: 'blue'};
+        
+        divTest: true;
+        divTest2: 'works';
+        
+        // array로 template을 repeat할 수 있다, menu등을 만드는데 유용하지 않을까 생각해본다
+        this.salutations = [
+          {what: 'num1', who: 'world'},
+          {what: 'num2', who: 'dom apis'},
+          {what: 'num3', who: 'declarative'},
+          {what: 'num4', who: 'imperative'}
+        ];
+        this.alternates = ['Hello', 'Hola', 'Howdy'];
+        this.current = 0;
+        this.stories = [
+          {headline: 'NUM1'},
+          {headline: 'NUM2'}
+        ];
+      },
+      updateModel: function() {
+        this.current = (this.current + 1) % this.alternates.length;
+        this.salutations[0].what = this.alternates[this.current];
+      },
+      toggle: function(value) {
+        this.test = value;
+      },
+      nameColor: 'red',
+      name: 'test',
+      num: 2,
+      // 안의 것들은 자동으로 계산된다
+      computed: {
+        square: 'num * num'
+      },
+      keypressHandler: function(event, detail, sender) {
+        if(detail == 1) {
+        	this.value1 = event;
+        	this.value2 = detail;
+        	this.value3 = sender;
+      	}
+      },
+      buttonClick: function(event, detail, sender) {
+        this.name = event;
+    	},
+      // name이 바뀔 때 마다 실행된다
+      nameChanged: function(oldValue, newValue) {
+      	this.num = this.num + 2;
+    	},
+      
+      foo: '',
+      bar: '',
+      
+      // 어떤 property가 바뀔 때 적용된다
+      observe: {
+        foo: 'validate',
+        bar: 'validate'
+      },
+      /* 처음부터 준비하는 녀석인 듯 하다
+      ready: function() {
+      	this.num = this.num + 99;
+      },
+      */
+      validate: function(oldValue, newValue) {
+    		this.num = this.num + 1;
+      },
+      changeFoo: function() {
+        this.foo = 'barrrrrrr';
+      },
+      logNameValue: function() {
+        console.log(this.$.nameInput.value);
+      },
+      onClick: function() {
+        this.fire('ouch', {msg: 'That hurt!'}); // fire(type, detail, targetNode, bubbles?, cancelable?)
+      }
+    });
+ 
+  </script>
+ 
+</polymer-element>

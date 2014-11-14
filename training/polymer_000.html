@@ -1,0 +1,279 @@
+<script src="bower_components/platform/platform.js"></script>
+
+<link rel="import" href="../core-field/core-field.html">
+<link rel="import" href="../core-icon/core-icon.html">
+<link rel="import" href="../core-input/core-input.html">
+<link rel="import" href="../core-icons/core-icons.html">
+
+<polymer-element name="my-element">
+
+  <template>
+    <style>
+      /* common attributes */
+      :host {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        box-sizing: border-box;
+        background-color: rgb(180, 180, 180);
+        font-family: 'Arial';
+      }
+      li {
+        list-style: none;
+      }
+      li:before {
+        content: "• ";
+        color: rgb(2, 98, 184);
+      }
+      a {
+        text-decoration: none;
+        color: black;
+      }
+      a:hover {
+        font-weight: bold;
+        color: rgb(2, 98, 184);
+      }
+      img:hover {
+      	opacity: 0.6;
+      }
+      hr {
+        width: 90%;
+        border: 0;
+   			height: 1px;
+    		background-color: rgb(128, 128, 128);
+      }
+      ul {
+      	-webkit-padding-start: 0px;
+        -webkit-margin-before: 8px;
+        line-height: 18px;
+      }
+      
+      /* font declarations */
+      @font-face {
+        font-family: 'Impact';
+        src: url('http://testmf.esy.es/fonts/impact.eot');
+        src: url('http://testmf.esy.es/fonts/impact.woff') format('woff'),
+          	 url('http://testmf.esy.es/fonts/impact.ttf') format('truetype'),
+          	 url('http://testmf.esy.es/fonts/impact.svg') format('svg');
+        font-weight: normal;
+        font-style: normal;
+			}
+      
+      /* font specific */
+      #sidebarTitle {
+        font-family: 'Impact';
+        font-size: 23.8px;
+        text-transform: uppercase;
+        color: rgb(2, 98, 184); 
+      }
+      .mainPage_containerTitle {
+        font-family: 'Impact';
+        font-size: 24px;
+        text-transform: uppercase;
+      }
+      .sidebarMenuTitle {
+        font-family: 'Impact';
+        font-size: 24px;
+        text-transform: uppercase;
+      }
+      .sidebarMenuTitle:before {
+        padding: 0px 5px;
+				content: "+";
+				color: white;
+				font-size: 20px;
+				background-color: rgb(1, 50, 94);
+				margin-right: 8px;
+      }
+      .sidebarMenuTitle:hover:before {
+        background-color: rgb(223, 28, 38) !important;
+      }
+      .mainPage_containerCount {
+        font-weight: bold;
+        font-size: 40px;
+        color: rgb(2, 98, 184); 
+      }
+      .mainPage_containerCount:hover {
+      	color: rgb(223, 28, 38);
+      }
+            
+      /* side menu */
+      #sideMenu {
+        position: absolute;
+        width: 234px;
+        height: 100%;
+        box-shadow: 4px 0px 10px rgb(128, 128, 128);
+        left: 0px;
+        top: 0px;
+        background-color: rgb(255, 255, 255);
+      }
+      #sideWrapper {
+        height: 100%;
+        padding: 20px;
+      }
+      #searchField {
+        margin-top: 12px;
+        border: 6px solid rgb(2, 98, 184);
+        width: 182px;
+        font-size: 14px;
+        height: 32px;
+      }
+      #searchFieldPlaceholder {
+        padding-left: 8px;
+      }
+      .menuList {
+        margin-top: 18px;
+      }
+      .sidebarMenuUl {
+        margin-left: 10px;
+      }
+      .sidebarMenuUl li:before {
+        content: none;
+      }
+      
+      /* main page */
+      #mainBanner {
+        position: absolute;
+        width: 748px;
+        height: 257px;
+        box-shadow: 0px 0px 18px rgb(128, 128, 128);
+        left: 252px;
+        top: 18px;
+        background-image: url(http://testmf.esy.es/images/graphic_mainPage_salesDepart.png);
+      }
+      #mainPage_containerInventory {
+        position: absolute;
+        width: 365px;
+        box-shadow: 0px 0px 18px rgb(128, 128, 128);
+        left: 252px;
+        top: 293px;
+        border-top-width: 8px;
+        border-top-style: solid;
+        border-top-color: rgb(2, 98, 184);
+        background-color: rgb(255, 255, 255);
+      }
+      #mainPage_containerViewOrders {
+        position: absolute;
+        width: 365px;
+        box-shadow: 0px 0px 18px rgb(128, 128, 128);
+        top: 293px;
+        left: 635px;
+        border-top-width: 8px;
+        border-top-style: solid;
+        border-top-color: rgb(2, 98, 184);
+        background-color: rgb(255, 255, 255);
+      }
+      .mainPage_container_wrapperTop {
+        margin: 18px;
+      	width: 100%;
+      }
+      .mainPage_container_img {
+        float: left;
+        width: 30%;
+        text-align: center;
+      }
+      .mainPage_container_menu {
+        float: right;
+        width: 66%;
+        font-size: 14px;
+      }
+      .mainPage_container_wrapperBottom {
+        width: 100%;
+        background-color: rgb(230, 230, 230);
+        padding: 18px 0px 18px 0px;
+        text-align: center;
+      }
+      .mainPage_container_hr {
+        margin-bottom: 10px;
+      }
+    </style>
+    
+    <core-card id="sideMenu" layout vertical>
+      <div id="sideWrapper">
+        <div id="mainLogo">
+          <img src="http://testmf.esy.es/images/graphic_matflow_logo_182.png"></img>
+        </div>
+        <span id="sidebarTitle">
+          Sales Department
+        </span>
+
+        <core-field id="searchField" icon="search" theme="core-light-theme" center horizontal layout>
+          <core-input willvalidate placeholder="Search" id="searchFieldPlaceholder" flex></core-input>
+          <core-icon icon="search" id="core_icon"></core-icon>
+        </core-field>
+
+        <div class="menuList">
+          <span class="sidebarMenuTitle">Inventory</span>
+          <ul class="sidebarMenuUl">
+            <li><a href="#">View All Stock Items</a></li>
+            <li><a href="#">Add a New Stock Item</a></li>
+            <li><a href="#">Edit / Remove Stock Items</a></li>
+          </ul>
+      	</div>
+      	<div class="menuList">
+          <span class="sidebarMenuTitle">Orders</span>
+          <ul class="sidebarMenuUl">
+            <li><a href="#">Placeholder</a></li>
+            <li><a href="#">Placeholder</a></li>
+            <li><a href="#">Placeholder</a></li>
+          <ul>
+        </div>
+    	</div>
+    </core-card>
+
+    <core-card id="mainBanner" layout vertical></core-card>
+    <core-card id="mainPage_containerInventory" layout vertical>
+      <div class="mainPage_container_wrapperTop">
+        <div class="mainPage_container_img">
+          <img src="http://testmf.esy.es/images/graphic_inventory.png"></img>
+        </div>
+        <div class="mainPage_container_menu">
+          <span class="mainPage_containerTitle">Inventory</span>
+          <ul>
+            <li><a href="#">View All Stock Items</a></li>
+            <li><a href="#">Add a New Stock Item</a></li>
+            <li><a href="#">Edit / Remove Stock Items</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="mainPage_container_wrapperBottom">
+        Total Inventory Count<br/>
+        <span class="mainPage_containerCount">26,598</span>
+        <hr class="mainPage_container_hr">
+        Total Inventory Cost<br/>
+        <span class="mainPage_containerCount">$785,386.20</span>
+      </div>
+    </core-card>
+    <core-card id="mainPage_containerViewOrders" layout vertical>
+      <div class="mainPage_container_wrapperTop">
+        <div class="mainPage_container_img">
+          <img src="http://testmf.esy.es/images/graphic_viewOrder.png"></img>
+      </div>
+      <div class="mainPage_container_menu">
+        <span class="mainPage_containerTitle">Orders</span>
+        <ul>
+          <li><a href="#">Placeholder</a></li>
+          <li><a href="#">Placeholder</a></li>
+          <li><a href="#">Placeholder</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="mainPage_container_wrapperBottom">
+      Total Order Counts This Week<br/>
+      <span class="mainPage_containerCount">568</span>
+      <hr class="mainPage_container_hr">
+      Total Sales This Week<br/>
+      <span class="mainPage_containerCount">$45,658.39</span>
+    </div>
+  	</core-card>
+
+  </template>
+
+  <script>
+
+    Polymer({
+      
+    });
+
+  </script>
+
+</polymer-element>

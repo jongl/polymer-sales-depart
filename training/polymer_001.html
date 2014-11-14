@@ -1,0 +1,160 @@
+<link rel="import" href="../core-field/core-field.html">
+<link rel="import" href="../core-icon/core-icon.html">
+<link rel="import" href="../core-input/core-input.html">
+<link rel="import" href="../core-icons/core-icons.html">
+
+<polymer-element name="matflowSales">
+
+  <template>
+    <style>
+      @font-face {
+        font-family: 'Impact';
+        src: url('http://testmf.esy.es/fonts/impact.eot');
+        src: url('http://testmf.esy.es/fonts/impact.woff') format('woff'),
+          	 url('http://testmf.esy.es/fonts/impact.ttf') format('truetype'),
+          	 url('http://testmf.esy.es/fonts/impact.svg') format('svg');
+        font-weight: normal;
+        font-style: normal;
+			}
+      .spanImpact
+      {
+        font-family: 'Impact';
+        font-size: 24px;
+        text-transform: uppercase;
+      }
+      :host {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        box-sizing: border-box;
+        background-color: rgb(180, 180, 180);
+      }
+      #sideMenu {
+        position: absolute;
+        width: 234px;
+        height: 100%;
+        box-shadow: rgba(0, 0, 0, 0.0980392) 0px 2px 4px, rgba(0, 0, 0, 0.0980392) 0px 0px 3px;
+        left: 0px;
+        top: 0px;
+        background-color: rgb(255, 255, 255);
+      }
+      #sideMenuWrap {
+        margin: 0px;
+        width: 100%;
+        height: 100%;
+        padding: 26px;
+      }
+      #mainBanner {
+        position: absolute;
+        width: 748px;
+        height: 257px;
+        box-shadow: rgba(0, 0, 0, 0.0980392) 0px 2px 4px, rgba(0, 0, 0, 0.0980392) 0px 0px 3px;
+        left: 252px;
+        top: 18px;
+        background-image: url(http://testmf.esy.es/images/graphic_mainPage_salesDepart.png);
+      }
+      #mainPage_container_inventory {
+        position: absolute;
+        width: 365px;
+        height: 327px;
+        box-shadow: rgba(0, 0, 0, 0.0980392) 0px 2px 4px, rgba(0, 0, 0, 0.0980392) 0px 0px 3px;
+        left: 252px;
+        top: 293px;
+        border-top-width: 4px;
+        border-top-style: solid;
+        border-top-color: rgb(2, 98, 184);
+        background-color: rgb(255, 255, 255);
+      }
+      #mainPage_container_viewOrders {
+        position: absolute;
+        width: 365px;
+        height: 327px;
+        box-shadow: rgba(0, 0, 0, 0.0980392) 0px 2px 4px, rgba(0, 0, 0, 0.0980392) 0px 0px 3px;
+        top: 293px;
+        left: 635px;
+        border-top-width: 4px;
+        border-top-style: solid;
+        border-top-color: rgb(2, 98, 184);
+        background-color: rgb(255, 255, 255);
+      }
+      #searchBar {
+        margin-top: 20px;
+      }
+      #searchField {
+        border: 4px solid rgb(2, 98, 184);
+        width: 182px;
+        font-size: 14px;
+      }
+      #searchFieldPlaceholder {
+        padding-left: 8px;
+      }
+      .mainPage_container_img {
+        float: left;
+        border: 1px solid red;
+        width: 40%;
+      }
+      .mainPage_container_menu {
+        float: right;
+        border: 1px solid red;
+        width: 50%;
+      }
+    </style>
+    <core-card id="sideMenu" layout vertical>
+      <div id="sideMenuWrap">
+        <div id="mainLogo">
+          <img src="http://testmf.esy.es/images/graphic_matflow_logo_182.png"></img>
+        </div>
+        <div>
+        </div>
+      	<div>
+          CMS4: Sales Department
+      	</div>
+        <div id="searchBar">
+          <core-field id="searchField" icon="search" theme="core-light-theme" center horizontal layout>
+            <core-input willvalidate placeholder="Search" id="searchFieldPlaceholder" flex></core-input>
+            <core-icon icon="search" id="core_icon"></core-icon>
+          </core-field>
+        </div>
+        <div class="menuList">
+
+        </div>
+      </div>
+    </core-card>
+    <core-card id="mainBanner" layout vertical></core-card>
+    <core-card id="mainPage_container_inventory" layout vertical>
+      <div class="mainPage_container_img">
+        <img src="http://testmf.esy.es/images/graphic_inventory.png"></img>
+      </div>
+      <div class="mainPage_container_menu">
+        <span class="spanImpact">Inventory</span>
+        <ul>
+          <li>View All Stock Items</li>
+          <li>Add a New Stock Item</li>
+          <li>Edit / Remove Stock Items</li>
+        </ul>
+      </div>
+    </core-card>
+    <core-card id="mainPage_container_viewOrders" layout vertical>
+      <div class="mainPage_container_img">
+        <img src="http://testmf.esy.es/images/graphic_viewOrder.png"></img>
+      </div>
+      <div class="mainPage_container_menu">
+        <span class="spanImpact">Orders</span>
+        <ul>
+          <li>View All Stock Items</li>
+        	<li>Add a New Stock Item</li>
+        	<li>Edit / Remove Stock Items</li>
+        </ul>
+      </div>
+    </core-card>
+  </template>
+
+  <script>
+
+    Polymer({
+      
+    });
+
+  </script>
+
+</polymer-element>

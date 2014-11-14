@@ -1,0 +1,599 @@
+<link rel="import" href="../core-field/core-field.html">
+<link rel="import" href="../core-icon/core-icon.html">
+<link rel="import" href="../core-input/core-input.html">
+<link rel="import" href="../core-icons/core-icons.html">
+ 
+<script src='https://cdn.firebase.com/js/client/1.0.15/firebase.js'></script>
+<script src='https://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js'></script>
+ 
+<polymer-element name="sales-depart">
+ 
+  <template>
+    <style>
+      /* common attributes */
+      :host {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        box-sizing: border-box;
+        background-color: rgb(180, 180, 180); 
+        font-family: 'Arial';
+      }
+      li {
+        list-style: none;
+      }
+      li:before {
+        content: "• ";
+        color: rgb(2, 98, 184);
+      }
+      a, .submenu {
+        text-decoration: none;
+        color: black;
+        cursor: pointer;
+      }
+      a:hover, .submenu:hover {
+        font-weight: bold;
+        color: rgb(2, 98, 184);
+      }
+      img:hover {
+      	opacity: 0.6;
+      }
+      hr {
+        width: 90%;
+        border: 0;
+   			height: 1px;
+    		background-color: rgb(128, 128, 128);
+      }
+      ul {
+      	-webkit-padding-start: 0px;
+        -webkit-margin-before: 8px;
+        line-height: 18px;
+      }
+      #backgroundWhite {
+        position: absolute;
+        width: 748px;
+        box-shadow: 0px 0px 18px rgb(128, 128, 128);
+        left: 252px;
+        top: 18px;
+        background-color: #ffffff;
+        border-top-width: 8px;
+				border-top-style: solid;
+				border-top-color: rgb(2, 98, 184);
+      }
+      #backgroundWrapper {
+        margin: 0px 20px 20px 20px;        
+      }
+      
+      /* input system */
+      .invInputLabel {
+        width: 100px;
+        display: inline-block;
+        font-size: 14px;
+        font-weight: bold;
+      }
+      input {
+        margin-bottom: 10px;
+        border: 3px solid rgb(128, 128, 128);
+        font-size: 14px;
+        padding:5px;
+      }
+      input:focus {
+       	border: 3px solid #df1c26;
+        outline: none;
+      }
+      .button {
+        cursor: pointer; 
+        background: #0061b7;
+        background-image: -webkit-linear-gradient(top, #0061b7, #00255d);
+  			background-image: -moz-linear-gradient(top, #0061b7, #00255d);
+ 				background-image: -ms-linear-gradient(top, #0061b7, #00255d);
+ 				background-image: -o-linear-gradient(top, #0061b7, #00255d);
+  			background-image: linear-gradient(to bottom, #0061b7, #00255d);
+  			-webkit-border-radius: 8;
+  			-moz-border-radius: 8;
+  			border-radius: 8px;
+        padding: 10px 16px 10px 16px;
+        display: inline-block;
+        font-family: 'Arial';
+        font-weight: bold;
+        font-size: 16px;
+        color: #ffffff;
+        margin-top: 10px;
+        /*-webkit-box-shadow: 0px 1px 6px #666666;
+ 				-moz-box-shadow: 0px 1px 6px #666666;
+  			box-shadow: 0px 1px 6px #666666;*/
+        text-decoration: none;
+      }
+      .button:hover {
+        background: #df1c26;
+ 				background-image: -webkit-linear-gradient(top, #df1c26, #df1c26);
+ 				background-image: -moz-linear-gradient(top, #df1c26, #df1c26);
+ 				background-image: -ms-linear-gradient(top, #df1c26, #df1c26);
+ 				background-image: -o-linear-gradient(top, #df1c26, #df1c26);
+ 				background-image: linear-gradient(to bottom, #df1c26, #df1c26);
+ 				text-decoration: none;
+      }
+      .invInputMsg {
+        display: inline-block;
+        margin-left: 10px;
+        color: #df1c26;
+      }
+            
+      /* font declarations */
+      @font-face {
+        font-family: 'Impact';
+        src: url('http://testmf.esy.es/fonts/impact.eot');
+        src: url('http://testmf.esy.es/fonts/impact.woff') format('woff'),
+          	 url('http://testmf.esy.es/fonts/impact.ttf') format('truetype'),
+          	 url('http://testmf.esy.es/fonts/impact.svg') format('svg');
+        font-weight: normal;
+        font-style: normal;
+			}
+      
+      /* font specific */
+      #sidebarTitle {
+        font-family: 'Impact';
+        font-size: 23.8px;
+        text-transform: uppercase;
+        color: rgb(2, 98, 184); 
+      }
+      .mainPage_containerTitle {
+        font-family: 'Impact';
+        font-size: 24px;
+        text-transform: uppercase;
+      }
+      .sidebarMenuTitle {
+        font-family: 'Impact';
+        font-size: 24px;
+        text-transform: uppercase;
+        cursor: pointer;
+      }
+      .sidebarMenuTitle:before {
+        padding: 0px 6px;
+				content: "+";
+				color: white;
+				font-size: 20px;
+				background-color: rgb(1, 50, 94);
+				margin-right: 8px;
+      }
+      .sidebarMenuTitle:hover:before {
+        background-color: rgb(223, 28, 38) !important;
+      }
+      .mainPage_containerCount {
+        font-weight: bold;
+        font-size: 40px;
+        color: rgb(2, 98, 184); 
+      }
+      .mainPage_containerCount:hover {
+      	color: rgb(223, 28, 38);
+      }
+            
+      /* side menu */
+      #mainLogo {
+        cursor: pointer; 
+      }
+      #sideMenu {
+        position: absolute;
+        width: 234px;
+        height: 100%;
+        box-shadow: 4px 0px 10px rgb(128, 128, 128);
+        left: 0px;
+        top: 0px;
+        background-color: rgb(255, 255, 255);
+      }
+      #sideWrapper {
+        height: 100%;
+        padding: 20px;
+      }
+      #searchField {
+        margin-top: 12px;
+        border: 6px solid rgb(2, 98, 184);
+        width: 182px;
+        font-size: 14px;
+        height: 32px;
+      }
+      #searchField:hover, #searchField:focus {
+        border: 6px solid rgb(223, 28, 38);
+      }
+      #searchFieldPlaceholder {
+        padding-left: 8px;
+      }
+      .menuList {
+        margin-top: 18px;
+      }
+      .sidebarMenuUl {
+        margin-left: 10px;
+      }
+      .sidebarMenuUl li:before {
+        content: none;
+      }
+      
+      /* main page */
+      #mainBanner {
+        position: absolute;
+        width: 748px;
+        height: 257px;
+        box-shadow: 0px 0px 18px rgb(128, 128, 128);
+        left: 252px;
+        top: 18px;
+        background-color: white;
+      }
+      .mainPage_container { /* need to merge */
+        position: absolute;
+        width: 365px;
+        box-shadow: 0px 0px 18px rgb(128, 128, 128);
+        border-top-width: 8px;
+        border-top-style: solid;
+        border-top-color: rgb(2, 98, 184);
+        background-color: rgb(255, 255, 255);
+      }
+      .mainPage_container_wrapperTop {
+        margin: 18px;
+      	width: 100%;
+      }
+      .mainPage_container_img {
+        float: left;
+        width: 30%;
+        text-align: center;
+      }
+      .mainPage_container_menu {
+        float: right;
+        width: 66%;
+        font-size: 14px;
+      }
+      .mainPage_container_wrapperBottom {
+        width: 100%;
+        background-color: rgb(230, 230, 230);
+        padding: 18px 0px 18px 0px;
+        text-align: center;
+      }
+      .mainPage_container_hr {
+        margin-bottom: 10px;
+      }
+      
+      /* inventory page */
+      #inventory_add {
+        position: absolute;
+        width: 748px;
+        height: 257px;
+        box-shadow: 0px 0px 18px rgb(128, 128, 128);
+        left: 252px;
+        top: 18px;
+        background-color: white;
+      }
+      #submit2 {
+      	background-color: red;
+      }
+      #messagesDiv {
+      	background-color: green;
+      	min-height: 300px;
+      }
+    </style>
+    <!--sidebar starts-->
+    <core-card id="sideMenu" layout vertical>
+      <div id="sideWrapper">
+        <div id="mainLogo" onclick="switchPage('home', 'none')">
+          <img src="{{imgs.side_graphic_mainLogo}}"></img>
+        </div>
+        <span id="sidebarTitle">
+          Sales Department
+        </span>
+ 
+        <core-field id="searchField" icon="search" theme="core-light-theme" center horizontal layout>
+          <core-input willvalidate placeholder="Search" id="searchFieldPlaceholder" flex></core-input>
+          <core-icon icon="search" id="core_icon"></core-icon>
+        </core-field>
+      
+				<!--repeat menu-->
+      	<template repeat="{{menu in menuContent}}">
+          <div class="menuList">
+            <span class="sidebarMenuTitle" onclick="switchPage('{{menu.location}}', 'none')">{{menu.title}}</span>
+            <ul class="sidebarMenuUl">
+              <template repeat="{{submenu in menu.sub}}"> 
+                <li class="submenu" onclick="switchPage('{{menu.location}}', '{{submenu.location}}')">{{submenu.title}}</li>
+              </template>
+            </ul>
+          </div>
+      	</template>
+      	<!--repeat menu ends-->
+    	</div>
+    </core-card>
+  	<!--sidebar ends-->
+  
+		<!--main page starts-->
+    <template if="{{currPg.main == 'home'}}">
+      <core-card id="mainBanner" layout vertical><img src="{{imgs.home_graphic_mainBanner}}"></core-card>
+      
+      <!--repeats container boxes-->
+      <template repeat="{{menu in menuContent}}">
+        <core-card style="left: {{mainPageContainer_left}}px; top: {{mainPageContainer_top}}px;" id="{{getHomeBoxIdName}}{{getHomeBoxIter}}" class="mainPage_container" layout vertical>
+          <div class="mainPage_container_wrapperTop">
+            <div class="mainPage_container_img">
+              <img src="{{menu.image}}"></img>
+            </div>
+            <div class="mainPage_container_menu">
+              <span class="mainPage_containerTitle">{{menu.title}}</span>
+              <ul>
+                <template repeat="{{submenu in menu.sub}}">
+                	<li class="submenu" onclick="switchPage('{{menu.location}}', '{{submenu.location}}')">{{submenu.title}}</li>
+                </template>
+              </ul>
+            </div>
+          </div>
+          <div class="mainPage_container_wrapperBottom">
+            <template repeat="{{info in menu.info}}">
+            	{{info.title}}<br/>
+            	<span class="mainPage_containerCount">{{info.symbol}}{{info.number}}</span>
+            	<hr class="mainPage_container_hr">
+            </template>
+          </div>
+        </core-card>
+  		</template>
+  	</template>
+		<!--main page ends-->
+			
+		<!--inventory page ends-->
+		<template if="{{currPg.main == 'inventory'}}">
+			<template if="{{currPg.sub == 'none'}}">
+      	<core-card id="backgroundWhite" layout vertical>
+          <div id="backgroundWrapper">
+        		<h1>Inventory</h1>
+          </div>
+        </core-card>
+      </template>
+      </template>
+ 
+      <template if ="{{currPg.sub == 'add'}}">
+        <core-card id="backgroundWhite" layout vertical>
+          <div id="backgroundWrapper">
+            <h1>Add a New Stock Item</h1>
+            	<label class="invInputLabel" for="model">Model No.</label>
+              <input type="text" id="model" placeholder="Model No.">
+            	<div id="invInputMsg_model" class="invInputMsg"></div>
+            	<br/>
+              
+            	<label class="invInputLabel" for="manu">Manufacturer</label>
+            	<input type="text" id="manu" placeholder="Manufacturer">
+            	<div id="invInputMsg_manu" class="invInputMsg"></div>
+            	<br/>          
+              
+            	<label class="invInputLabel" for="qty">Quantity</label>
+            	<input type="text" id="qty" placeholder="Quantity">
+            	<div id="invInputMsg_qty" class="invInputMsg"></div>
+            	<br/>
+              
+            	<div class="button" on-click="{{onClick}}">Add a New Item</div>
+ 
+              <div id="addInvMsg" class="invInputMsg"></div>
+          </div>
+        </core-card>
+      </template>
+      
+      <template if ="{{currPg.sub == 'view'}}">
+        <core-card id="backgroundWhite" layout vertical>
+        	<div id="backgroundWrapper">
+          	<h1>View All Stock Items</h1>
+            
+            <div id="messagesDiv" onload="{{displayInventory}}">append here:</div>
+            <script>
+              testFunction1();
+            </script>
+          </div>
+        </core-card>
+      </template>
+			<template if ="{{currPg.sub == 'edit'}}">
+        <core-card id="backgroundWhite" layout vertical>
+          <div id="backgroundWrapper">
+          	<h1>Edit / Remove Stock Items</h1>
+          </div>
+        </core-card>
+      </template>
+		</template>
+		<!--inventory page ends-->
+ 		
+ 
+		
+		<template if="{{currPg.main == 'orders'}}">
+      <core-card id="mainBanner" layout vertical>a<sales-depart-menus></sales-depart-menus></core-card>
+		</template>
+  </template>
+	 
+  <script>
+    
+    var myDataRef; // firebase json
+    var salesDepart;
+    var inventoryArray;
+    
+    // 여기서 배울 수 있는 건 아무데나 뿌려놓는다고 시작되지 않는다는 것이다, ready에 넣어야 작동한다
+    $(document).ready(function() {
+      salesDepart = document.querySelector("sales-depart");
+      myDataRef = new Firebase('https://tdbgao6ofo0.firebaseio-demo.com/');
+      
+      salesDepart.addEventListener('buttonClick', function(e) {
+    		var model = $('body /deep/ #model').val();
+        var manu = $('body /deep/ #manu').val();
+        var qty = $('body /deep/ #qty').val();
+        var intRegex = /^\d+$/;
+        
+        var modelCheck = (model.length == 0);
+        var manuCheck = (manu.length == 0);
+        var qtyCheck = (qty.length == 0);
+        
+        $('body /deep/ #addInvMsg').html('');
+        $('body /deep/ #invInputMsg_model').html('');
+        $('body /deep/ #invInputMsg_manu').html('');
+        $('body /deep/ #invInputMsg_qty').html('');  
+        
+        if (!modelCheck && !manuCheck && !qtyCheck) { // if all the fields are filled
+          if (intRegex.test(qty)) {
+            //$.datepicker.formatDate('yy/mm/dd', new Date());
+            
+          	myDataRef.push({model: model, manu: manu, qty: qty});
+ 
+          	$('body /deep/ #model').val('');
+          	$('body /deep/ #manu').val('');
+          	$('body /deep/ #qty').val('');
+ 
+	          $('body /deep/ #addInvMsg').html('Successfully added a new stock item!');
+          } else {
+          	$('body /deep/ #invInputMsg_qty').html('Please enter a number in the quantity field');  
+          }
+        } else {
+        	if (modelCheck)
+          	$('body /deep/ #invInputMsg_model').html('Please enter a model number');
+        
+        	if (manuCheck)
+          	$('body /deep/ #invInputMsg_manu').html('Please enter a manufacturer name');
+        
+	        if (qtyCheck || !intRegex.test(qty))
+            $('body /deep/ #invInputMsg_qty').html('Please enter a number in the quantity field');
+        }
+  		});
+      /*
+      myDataRef.on('child_added', function(snapshot) {
+        var message = snapshot.val();
+        $('<div/>').text(message.model).prepend($('<em/>').text(message.manu+': '+message.qty)).appendTo($('body /deep/ #messagesDiv'));
+      });
+      */
+      
+      /*****************************************************************
+      make the load function working
+      지금 생각하는 것은 message div가 load 되면 displayChatMessage function을 부르면 될 것 같은데
+      문제는 load라고 하는 경우 console조차 작동하지 않는다
+      
+      $('body /deep/ #messagesDiv').load (function() {
+        console.log('hi');
+        
+        
+        /*
+        myDataRef.on('child_added', function(snapshot) {
+          var message = snapshot.val();
+          //console.log(message.model + " " + message.manu + " " + message.qty);
+          $('<div/>').text(message.model).prepend($('<em/>').text(message.manu+': '+message.qty)).appendTo($('body /deep/ #messagesDiv'));
+          //displayChatMessage(message.model, message.manu, message.qty);
+        });
+      });*/
+    });
+    
+    function testFunction1() {
+      //document.querySelector("sales-depart").displayInventory();
+    	myDataRef.on('child_added', function(snapshot) {
+        var message = snapshot.val();
+        $('<div/>').text(message.model).prepend($('<em/>').text(message.manu+': '+message.qty)).appendTo($('body /deep/ #messagesDiv'));
+      });
+    }
+    
+		function displayChatMessage(model, manu, qty) {
+      $('<div/>').text(model).prepend($('<em/>').text(manu+': '+qty)).appendTo($('body /deep/ #messagesDiv'));      
+		};
+    
+    // switch to the parameter
+		function switchPage(mainPg, subPg) {
+    	salesDepart.homeBox.iter = 0;
+      salesDepart.currPg.main = mainPg;
+      salesDepart.currPg.sub = subPg;
+    }
+    
+    Polymer('sales-depart', {
+      ready: function() {
+        
+        //this.addEventListener('buttonClick', this.testFunction);
+        
+        //this.currPg = { main: 'home', sub: 'none' };
+        this.currPg = { main: 'inventory', sub: 'view' };
+ 
+        this.path = {
+          master: 'http://testmf.esy.es/',
+          img: 'images/'
+        };
+        
+        // img locations
+        this.imgs = {
+          side_graphic_mainLogo: this.path.master + this.path.img + 'graphic_matflow_logo_182.png',
+          home_graphic_mainBanner: this.path.master + this.path.img + 'graphic_mainPage_salesDepart.png',
+          home_icon_viewOrders: this.path.master + this.path.img + 'graphic_viewOrder.png',
+          home_icon_inventory: this.path.master + this.path.img + 'graphic_inventory.png'
+        };
+        
+        // main page box container
+        this.home_box_iter = 0;
+        this.home_box_id_pre = 'mainPage_container_';
+        
+        this.homeBox = {
+          idName: 'mainPage_container_',
+          iter: 0,
+          margin: 18,
+          width: 365,
+          originW: 234,
+          originH: 275,
+          height: 343, // 높이를 다이나믹하게 만들자
+          leftRecordLeft: 0,
+          leftRecordRight: 0,
+          topRecordLeft: 0,
+          topRecordRight: 0
+        };
+        
+        // initialize record variables
+        this.homeBox.leftRecordLeft = this.homeBox.originW + this.homeBox.margin;
+        this.homeBox.leftRecordRight = this.homeBox.originW + (this.homeBox.margin * 2) + this.homeBox.width;
+        
+        this.homeBox.topRecordLeft = this.homeBox.originH + this.homeBox.margin;
+        this.homeBox.topRecordRight = this.homeBox.topRecordLeft;
+        
+        // menu content for sidebar and main page boxes
+        this.menuContent = [
+          { title: 'Inventory', location: 'inventory', image: this.imgs.home_icon_inventory,
+            sub: [ { title: 'View All Stock Items', location: 'view' },
+                   { title: 'Add a New Stock Item', location: 'add' },
+                   { title: 'Edit / Remove Stock Items', location: 'edit' } ],
+           info: [ { title: 'Total Inventory Count', symbol: '', number: '26,598' },
+          				 { title: 'Total Inventory Cost', symbol: '$', number: '785,386.20' } ]
+          },
+          { title: 'Orders', location: 'orders', image: this.imgs.home_icon_viewOrders,
+          	 sub: [ { title: 'Placeholder', location: 'none' },
+               	    { title: 'Placeholder', location: 'none' },
+                    { title: 'Placeholder', location: 'none' } ],
+            info: [ { title: 'Total Order Counts This Week', symbol: '', number: '568' },
+                    { title: 'Total Sales This Week', symbol: '$', number: '45,658.39' } ]
+          }
+        ];
+      },
+      
+      // get main page box container and increase number by 1
+      get getHomeBoxIter() {
+      	return this.homeBox.iter++; 
+      },
+      
+      get getHomeBoxIdName() {
+      	return this.homeBox.idName;
+    	},
+      
+      get mainPageContainer_left() {
+        if(this.homeBox.iter % 2 != 0)
+      		return this.homeBox.leftRecordRight;
+      	else
+      		return this.homeBox.leftRecordLeft;
+    	},
+      
+      get mainPageContainer_top() {
+        if(this.homeBox.iter % 2 != 0) {
+      		ret = this.homeBox.topRecordRight;
+          this.homeBox.topRecordRight = this.homeBox.topRecordRight + this.homeBox.margin + this.homeBox.height;
+          return ret;
+        }	else {
+          ret = this.homeBox.topRecordLeft;
+          this.homeBox.topRecordLeft = this.homeBox.topRecordLeft + this.homeBox.margin + this.homeBox.height;
+          return ret;
+        }
+    	},
+      onClick: function() {
+      	this.fire('buttonClick');
+      },
+      displayInventory: function() {
+      	this.fire('displayInventory');
+    	}
+    });
+ 
+  </script>
+ 
+</polymer-element>
