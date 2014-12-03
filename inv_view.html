@@ -1,0 +1,109 @@
+<polymer-element name="sales-depart-inv-view">
+	<template>
+		<link rel="stylesheet" type="text/css" href="css/inventory.css">
+		<link rel="stylesheet" type="text/css" href="css/common.css">
+		
+		<core-card id="backgroundWhite" layout vertical>
+			<div id="backgroundWrapper">
+				<h1>View / Edit Stock Items</h1>
+				<script>				
+					displayInventory();
+				</script>
+				<table>
+					<tr>
+						<template repeat="{{head in tableHeader}}">
+							<th>{{head}}</th>
+						</template>
+					</tr>
+					
+					<template repeat="{{row in trimedInvArray}}">
+						<tr>
+							<td><strong>{{row.model}}</strong></td>
+							<td>{{row.manu}}</td>
+							<td>cat</td>
+							<td>{{row.qty}}</td>
+							<td>price</td>
+							<td>edit</td>
+							<td>delete</td>
+						</tr>
+					</template>
+					
+				</table>
+				<div id="bTb">
+					<div id="bTb_left">
+						<input type="text" name="searchInv" id="searchInv" style="margin-right: 10px;">
+						<div class="button" on-click="{{onClick_search}}">Search</div>
+					</div>
+					<div id="bTb_right">
+						<div class="button" on-click="{{onClick_prev}}">Prev</div>
+						<div class="button" on-click="{{onClick_next}}">Next</div>
+					</div>
+				</div>
+			</div>
+		</core-card>
+	</template>
+	<script type="text/javascript" src="js/common.js"></script>
+	<script>
+		$(document).ready(function() {
+			displayInventory();
+		});	
+		
+		Polymer('sales-depart-inv-view', {
+			ready: function() {
+				this.tableHeader = tableHeader;
+				this.inventoryArray = inventoryArray;
+				this.pgIndex = 0;
+				this.pgInterval = pgInterval;
+				this.pgButtonNum = parseInt(this.inventoryArray.length / this.pgInterval + 1);
+				this.trimInvArray();
+			},
+			onClick_prev: function() {
+				if (this.pgIndex > 0)
+					this.pgIndex = this.pgIndex - 1;
+				this.trimInvArray();
+			},
+			onClick_search: function() {
+				this.searchValue = document.querySelector("body /deep/ #searchInv").value;
+				this.searchInvArray_model();
+			},
+			onClick_num: function() {
+				//if ((this.pgIndex >= 0) || (this.pgIndex <= this.pgButtonNum - 1))
+					//this.trimInvArray();
+			},
+			onClick_next: function() {
+				if (this.pgIndex < this.pgButtonNum - 1)
+					this.pgIndex = this.pgIndex + 1;
+				this.trimInvArray();
+			},
+			searchInvArray_model: function() {
+				this.trimedInvArray = [];
+				var i = 0;
+				
+				for (j = 0; j < this.inventoryArray.length; j++)
+					if (this.inventoryArray[j].model == this.searchValue) {
+						this.trimedInvArray[i] = this.inventoryArray[j];
+						i++;
+					}
+			},
+			trimInvArray: function() {
+				console.log(this.inventoryArray);
+				this.trimedInvArray = [];
+				var starting = this.pgIndex * this.pgInterval;
+				var ending = (this.pgIndex + 1) * this.pgInterval - 1;
+				var max = this.inventoryArray.length;
+				
+				if (starting <= max) {
+					if (ending > max)
+						ending = max;
+					var i = 0;
+					
+					for (j = starting; j < ending; j++) {
+						this.trimedInvArray[i] = this.inventoryArray[j];
+						i++;
+					}
+				}
+				console.log(this.trimedInvArray);
+			}
+		});
+	</script>
+</polymer-element>

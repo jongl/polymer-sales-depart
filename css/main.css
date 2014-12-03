@@ -1,0 +1,59 @@
+.mainPage_containerTitle {
+	font-family: 'Impact';
+	font-size: 24px;
+	text-transform: uppercase;
+}
+.mainPage_containerCount {
+	font-weight: bold;
+	font-size: 40px;
+	color: rgb(2, 98, 184); 
+}
+.mainPage_containerCount:hover {
+	color: rgb(223, 28, 38);
+}
+#mainBanner {
+	position: absolute;
+	width: 748px;
+	height: 257px;
+	box-shadow: 0px 0px 18px rgb(128, 128, 128);
+	left: 252px;
+	top: 18px;
+	background-color: white;
+}
+.mainPage_container { /* need to merge */
+	position: absolute;
+	width: 365px;
+	box-shadow: 0px 0px 18px rgb(128, 128, 128);
+	border-top-width: 8px;
+	border-top-style: solid;
+	border-top-color: rgb(2, 98, 184);
+	background-color: rgb(255, 255, 255);
+}
+.mainPage_container_wrapperTop {
+	margin: 18px;
+	width: 100%;
+}
+.mainPage_container_img {
+	float: left;
+	width: 30%;
+	text-align: center;
+}
+.mainPage_container_menu {
+	float: right;
+	width: 66%;
+	font-size: 14px;
+}
+.mainPage_container_wrapperBottom {
+	width: 100%;
+	background-color: rgb(230, 230, 230);
+	padding: 18px 0px 18px 0px;
+	text-align: center;
+}
+.mainPage_container_hr {
+	margin-bottom: 10px;
+}
+/*
+.mainPage_container_wrapperBottom:last-child {
+	display: none;
+}
+*/

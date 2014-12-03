@@ -1,0 +1,76 @@
+<polymer-element name="sales-depart-inv-add">
+	<template>
+		<link rel="stylesheet" type="text/css" href="css/inventory.css">
+		<link rel="stylesheet" type="text/css" href="css/common.css">
+		
+		<core-card id="backgroundWhite" layout vertical>
+			<div id="backgroundWrapper">
+				<h1>Add a New Stock Item</h1>
+					
+					<template repeat="{{inv in invContent}}">
+						<label class="invInputLabel" for="model">{{inv.label}}</label>
+						<input type="text" id="{{inv.inputId}}" placeholder="{{inv.placeholder}}">
+						<div id="{{inv.msgDivId}}" class="invInputMsg"></div>
+						<br/>
+					</template>
+					
+					<div class="button" on-click="{{onClick}}">Add a New Item</div>
+					<div id="addInvMsg" class="invInputMsg"></div>
+			</div>
+		</core-card>
+	</template>
+	<script type="text/javascript" src="js/common.js"></script>
+	<script>
+		$(document).ready(function() {
+			this.addEventListener('buttonClick', function(e) {
+				var userInputs = new Array();
+				var userInput;
+				var isEmpty;
+				var emptyLists = new Array();
+				var noIntLists = new Array();
+				
+				$('body /deep/ #addInvMsg').html('');
+				
+				//*********************************************
+				
+				// 중복 체크, model number가 
+				
+				//*********************************************
+				
+				
+				for (i = 0; i < invContent.length; i++) {
+					userInput = $('body /deep/ #' + invContent[i].inputId).val();
+					
+					if (!userInput.trim()) // check empty string
+						emptyLists.push(i);
+					if (invContent[i].inputType == 'integer' // integer checking
+						&& !intRegex.test(userInput))
+						noIntLists.push(i);
+					userInputs[invContent[i].key] = userInput;
+					$('body /deep/ #' + invContent[i].msgDivId).html('');
+				}
+				
+				if (emptyLists.length == 0 && noIntLists.length == 0) { // if all the fields are filled
+					jsonData_inv.push(userInputs);
+					for (i = 0; i < invContent.length; i++) //empty fields
+						$('body /deep/ #' + invContent[i].inputId).val('');
+					$('body /deep/ #addInvMsg').html('Successfully added a new stock item!');
+				} else {
+					for (i = 0; i < emptyLists.length; i++)
+						$('body /deep/ #' + invContent[emptyLists[i]].msgDivId).html('Please enter a value here');
+					for (i = 0; i < noIntLists.length; i++)
+						$('body /deep/ #' + invContent[noIntLists[i]].msgDivId).html('Please enter an integer value here');
+				}
+			});
+		});	
+		
+		Polymer('sales-depart-inv-add', {
+			ready: function() {
+				this.invContent = invContent;
+			},
+			onClick: function() {
+				this.fire('buttonClick');
+			}
+		});
+	</script>
+</polymer-element>

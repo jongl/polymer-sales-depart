@@ -1,0 +1,86 @@
+<polymer-element name="sales-depart-main">
+	<template>
+		<link rel="stylesheet" type="text/css" href="css/common.css">
+		<link rel="stylesheet" type="text/css" href="css/main.css">
+	
+		<core-card id="mainBanner" layout vertical><img src="{{img_mainBanner}}"></core-card>
+      
+		<!--repeats container boxes-->
+		<template repeat="{{menu in menuContent}}">
+			<core-card style="left: {{mainPageContainer_left}}px; top: {{mainPageContainer_top}}px;" id="{{getHomeBoxIdName}}{{getHomeBoxIter}}" class="mainPage_container" layout vertical>
+				<div class="mainPage_container_wrapperTop">
+					<div class="mainPage_container_img">
+						<img src="{{menu.image}}"></img>
+					</div>
+					<div class="mainPage_container_menu">
+						<span class="mainPage_containerTitle">{{menu.title}}</span>
+						<ul>
+							<template repeat="{{submenu in menu.sub}}">
+								<li class="submenu" onclick="switchPage('{{submenu.location}}')">{{submenu.title}}</li>
+							</template>
+						</ul>
+					</div>
+				</div>
+				<div class="mainPage_container_wrapperBottom">
+					<template repeat="{{info in menu.info}}">
+						{{info.title}}<br/>
+						<span class="mainPage_containerCount">{{info.symbol}}{{info.number}}</span>
+						<hr class="mainPage_container_hr">
+					</template>
+				</div>
+			</core-card>
+  		</template>
+  	</template>
+	
+	<script type="text/javascript" src="js/common.js"></script>
+	<script>
+	Polymer('sales-depart-main', {
+		ready: function() {
+				this.img_mainBanner = imgs.home_graphic_mainBanner;
+				this.menuContent = menuContent;
+				
+				this.homeBox = {
+					idName: 'mainPage_container_',
+					iter: 0,
+					margin: 18,
+					width: 365,
+					originW: 234,
+					originH: 275,
+					height: 343, // make the height dynamic later
+					leftRecordLeft: 0,
+					leftRecordRight: 0,
+					topRecordLeft: 0,
+					topRecordRight: 0
+				};
+				
+				this.homeBox.leftRecordLeft = this.homeBox.originW + this.homeBox.margin;
+				this.homeBox.leftRecordRight = this.homeBox.originW + (this.homeBox.margin * 2) + this.homeBox.width;
+				this.homeBox.topRecordLeft = this.homeBox.originH + this.homeBox.margin;
+				this.homeBox.topRecordRight = this.homeBox.topRecordLeft;
+		},
+		get getHomeBoxIter() {
+			return this.homeBox.iter++; 
+		},
+		get getHomeBoxIdName() {
+			return this.homeBox.idName;
+    	},
+		get mainPageContainer_left() {
+			if(this.homeBox.iter % 2 != 0)
+				return this.homeBox.leftRecordRight;
+			else
+				return this.homeBox.leftRecordLeft;
+    	},
+		get mainPageContainer_top() {
+			if(this.homeBox.iter % 2 != 0) {
+				ret = this.homeBox.topRecordRight;
+				this.homeBox.topRecordRight = this.homeBox.topRecordRight + this.homeBox.margin + this.homeBox.height;
+				return ret;
+			} else {
+				ret = this.homeBox.topRecordLeft;
+				this.homeBox.topRecordLeft = this.homeBox.topRecordLeft + this.homeBox.margin + this.homeBox.height;
+				return ret;
+			}
+    	}
+	});
+	</script>
+</polymer-element>

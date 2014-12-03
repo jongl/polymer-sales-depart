@@ -1,0 +1,62 @@
+/* side menu */
+#mainLogo {
+	cursor: pointer; 
+}
+#sideMenu {
+	position: absolute;
+	width: 234px;
+	height: 100%;
+	box-shadow: 4px 0px 10px rgb(128, 128, 128);
+	left: 0px;
+	top: 0px;
+	background-color: rgb(255, 255, 255);
+}
+#sideWrapper {
+	height: 100%;
+	padding: 20px;
+}
+#searchField {
+	margin-top: 12px;
+	border: 6px solid rgb(2, 98, 184);
+	width: 182px;
+	font-size: 14px;
+	height: 32px;
+}
+#searchField:hover, #searchField:focus {
+	border: 6px solid rgb(223, 28, 38);
+}
+#searchFieldPlaceholder {
+	padding-left: 8px;
+}
+.menuList {
+	margin-top: 18px;
+}
+.sidebarMenuUl {
+	margin-left: 10px;
+}
+.sidebarMenuUl li:before {
+	content: none;
+}
+#sidebarTitle {
+	font-family: 'Impact';
+	font-size: 23.8px;
+	text-transform: uppercase;
+	color: rgb(2, 98, 184); 
+}
+.sidebarMenuTitle {
+	font-family: 'Impact';
+	font-size: 24px;
+	text-transform: uppercase;
+	cursor: pointer;
+}
+.sidebarMenuTitle:before {
+	padding: 0px 6px;
+	content: "+";
+	color: white;
+	font-size: 20px;
+	background-color: rgb(1, 50, 94);
+	margin-right: 8px;
+}
+.sidebarMenuTitle:hover:before {
+	background-color: rgb(223, 28, 38) !important;
+}

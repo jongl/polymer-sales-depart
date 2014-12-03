@@ -1,0 +1,75 @@
+@font-face {
+	font-family: 'Impact';
+	src: url('http://testmf.esy.es/fonts/impact.eot');
+	src: url('http://testmf.esy.es/fonts/impact.woff') format('woff'),
+	url('http://testmf.esy.es/fonts/impact.ttf') format('truetype'),
+	url('http://testmf.esy.es/fonts/impact.svg') format('svg');
+	font-weight: normal;
+	font-style: normal;
+}
+li {
+	list-style: none;
+}
+li:before {
+	content: "• ";
+	color: rgb(2, 98, 184);
+}
+.submenu {
+	font-size: 14px;
+}
+a, .submenu {
+	text-decoration: none;
+	color: black;
+	cursor: pointer;
+}
+a:hover, .submenu:hover {
+	font-weight: bold;
+	color: rgb(2, 98, 184);
+}
+img:hover {
+	opacity: 0.6;
+}
+hr {
+	width: 90%;
+	border: 0;
+	height: 1px;
+	background-color: rgb(128, 128, 128);
+}
+ul {
+	-webkit-padding-start: 0px;
+	-webkit-margin-before: 8px;
+	line-height: 18px;
+}
+h1 {
+	font-size: 26px;
+	font-family: 'Impact';
+	text-transform: uppercase;
+	font-weight: normal;
+}
+#backgroundWhite {
+	position: absolute;
+	width: 748px;
+	box-shadow: 0px 0px 18px rgb(128, 128, 128);
+	left: 252px;
+	top: 18px;
+	background-color: #ffffff;
+	border-top-width: 8px;
+	border-top-style: solid;
+	border-top-color: rgb(2, 98, 184);
+}
+#backgroundWrapper {
+	margin: 0px 20px 20px 20px;        
+}
+table {
+	width: 100%;
+	border-spacing: 0px;
+}
+th {
+	background-color: #aaaaaa;
+	color: #fff;
+	padding: 4px 0px 4px 0px;
+}
+td {
+	padding: 4px 0px 4px 0px;
+	text-align: center;
+}

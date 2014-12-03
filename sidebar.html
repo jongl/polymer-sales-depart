@@ -1,0 +1,44 @@
+<polymer-element name="sales-depart-sidebar">
+	<template>
+		<link rel="stylesheet" type="text/css" href="css/sidebar.css">
+		<link rel="stylesheet" type="text/css" href="css/common.css">
+		
+		<core-card id="sideMenu" layout vertical>
+			<div id="sideWrapper">
+			<div id="mainLogo" onclick="switchPage('home')">
+				<img id="logoImg" src="{{img_logo}}"></img>
+			</div>
+			<span id="sidebarTitle">Sales Department</span>
+
+			<core-field id="searchField" icon="search" theme="core-light-theme" center horizontal layout>
+				<core-input willvalidate placeholder="Search" id="searchFieldPlaceholder" flex></core-input>
+				<core-icon icon="search" id="core_icon"></core-icon>
+			</core-field>
+
+			<!--repeat menu-->
+			<template repeat="{{menu in menuContent}}">
+				<div class="menuList">
+				<span class="sidebarMenuTitle">{{menu.title}}</span>
+				<ul class="sidebarMenuUl">
+					<template repeat="{{submenu in menu.sub}}"> 
+					<li class="submenu" onclick="switchPage('{{submenu.location}}')">{{submenu.title}}</li>
+					</template>
+				</ul>
+				</div>
+			</template>
+			<!--repeat menu ends-->
+			</div>
+		</core-card>
+		<!--sidebar ends-->
+	</template>
+	
+	<script type="text/javascript" src="js/common.js"></script>
+	<script>
+		Polymer('sales-depart-sidebar', {
+			ready: function() {
+				this.img_logo = imgs.side_graphic_mainLogo;
+				this.menuContent = menuContent;
+			}
+		});
+	</script>
+<polymer-element>
