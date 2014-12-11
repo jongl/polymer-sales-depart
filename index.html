@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
+		<title>Material Flow Sales Department Application</title>
 		<meta charset="utf-8">
 		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -18,7 +19,7 @@
 		<link rel="import" href="main.html">
 		<link rel="import" href="inv_view.html">
 		<link rel="import" href="inv_add.html">
-		
+		<link rel="import" href="inv_manu.html">
 	</head>
 	
 	<body>
@@ -36,7 +37,9 @@
 				<template if="{{currPg == 'inv_view'}}">
 					<sales-depart-inv-view></sales-depart-inv-view>
 				</template>
-				
+				<template if="{{currPg == 'inv_manu'}}">
+					<sales-depart-inv-manu></sales-depart-inv-manu>
+				</template>
 			</template>
 			
 			<script>

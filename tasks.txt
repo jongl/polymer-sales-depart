@@ -1,0 +1,37 @@
+﻿/*********************************************
+				
+가장 먼저 할 것은
+manufacturer에서 date과 key값 (manuname+date)을 적용시키는 것이다
+그 다음에는 category에 그대로 적용시키고
+item쪽에 적용시킨다
+그 다음에 manu와 cat을 select화 시켜서 item에 적용시킨다
+				
+				
+				
+중복 체크, model number
+
+2. prev/next button switch to back button when search mode
+
+3. add fields to add page
+
+4. edit page, delete button
+
+
+추가적으로 manu / cat을 select로 만들고
+search에서 그걸 선택할 수 있도록, dropdown (model, manu, cat)
+
+에딧 페이지는 view page에서
+model number를 바꾸는 경우... key 값을 바꿀 수 있나?
+아니면 key값을 model#+datehourmin형식으로?
+
+
+template if로
+
+view table 모드나 edit모드로 변경 가능하도록 한다?
+
+***price 소수점 2자리
+
+
+
+**********************************************/
+

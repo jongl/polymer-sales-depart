@@ -9,16 +9,18 @@
 				<img id="logoImg" src="{{img_logo}}"></img>
 			</div>
 			<span id="sidebarTitle">Sales Department</span>
-
+			
+			<!--
 			<core-field id="searchField" icon="search" theme="core-light-theme" center horizontal layout>
 				<core-input willvalidate placeholder="Search" id="searchFieldPlaceholder" flex></core-input>
 				<core-icon icon="search" id="core_icon"></core-icon>
 			</core-field>
-
+			-->
+			
 			<!--repeat menu-->
 			<template repeat="{{menu in menuContent}}">
 				<div class="menuList">
-				<span class="sidebarMenuTitle">{{menu.title}}</span>
+				<span class="sidebarMenuTitle"><img class="sidebarMenuIcon" src="{{menu.image}}" />{{menu.title}}</span>
 				<ul class="sidebarMenuUl">
 					<template repeat="{{submenu in menu.sub}}"> 
 					<li class="submenu" onclick="switchPage('{{submenu.location}}')">{{submenu.title}}</li>

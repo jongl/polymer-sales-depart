@@ -8,9 +8,21 @@
 				<h1>Add a New Stock Item</h1>
 					
 					<template repeat="{{inv in invContent}}">
-						<label class="invInputLabel" for="model">{{inv.label}}</label>
-						<input type="text" id="{{inv.inputId}}" placeholder="{{inv.placeholder}}">
-						<div id="{{inv.msgDivId}}" class="invInputMsg"></div>
+						<template if="{{inv.inputType == 'string'}}">
+							<label class="invInputLabel">{{inv.label}}</label>
+							<input type="text" id="{{inv.inputId}}" placeholder="{{inv.placeholder}}">
+							<div id="{{inv.msgDivId}}" class="invInputMsg"></div>
+						</template>
+						<template if="{{inv.inputType == 'integer' || inv.inputType == 'float'}}">
+							<label class="invInputLabel">{{inv.label}}</label>
+							<input type="number" id="{{inv.inputId}}" placeholder="{{inv.placeholder}}">
+							<div id="{{inv.msgDivId}}" class="invInputMsg"></div>
+						</template>
+						<template if="{{inv.inputType == 'textarea'}}">
+							<label class="invInputLabel" style="vertical-align: top; margin-top: 8px;">{{inv.label}}</label>
+							<textarea id="{{inv.inputId}}" rows="8" cols="50" placeholder="{{inv.placeholder}}"></textarea>
+							<div id="{{inv.msgDivId}}" class="invInputMsg" style="vertical-align: top; margin-top: 8px;"></div>
+						</template>
 						<br/>
 					</template>
 					
@@ -28,15 +40,10 @@
 				var isEmpty;
 				var emptyLists = new Array();
 				var noIntLists = new Array();
+				var noFloatLists = new Array();
+				var modelNoCheck;
 				
 				$('body /deep/ #addInvMsg').html('');
-				
-				//*********************************************
-				
-				// 중복 체크, model number가 
-				
-				//*********************************************
-				
 				
 				for (i = 0; i < invContent.length; i++) {
 					userInput = $('body /deep/ #' + invContent[i].inputId).val();
@@ -46,20 +53,33 @@
 					if (invContent[i].inputType == 'integer' // integer checking
 						&& !intRegex.test(userInput))
 						noIntLists.push(i);
+					if (invContent[i].inputType == 'float'
+						&& !floatRegex.test(userInput))
+						noFloatLists.push(i);
 					userInputs[invContent[i].key] = userInput;
+					
+					if (i == invContentCheck_index)
+						modelNoCheck = userInput;
 					$('body /deep/ #' + invContent[i].msgDivId).html('');
 				}
 				
-				if (emptyLists.length == 0 && noIntLists.length == 0) { // if all the fields are filled
-					jsonData_inv.push(userInputs);
-					for (i = 0; i < invContent.length; i++) //empty fields
-						$('body /deep/ #' + invContent[i].inputId).val('');
-					$('body /deep/ #addInvMsg').html('Successfully added a new stock item!');
+				if (emptyLists.length == 0 && noIntLists.length == 0 && noFloatLists.length == 0) { // if all the fields are filled
+					if (!checkDupKey(inventoryArray, invContent[invContentCheck_index][invContentCheck_key], modelNoCheck)) { // model duplicate check
+						jsonData_inv.push();
+						jsonData_inv.child(userInputs[invContent[invContentCheck_index][invContentCheck_key]]).set(userInputs);
+						
+						for (i = 0; i < invContent.length; i++) //empty fields
+							$('body /deep/ #' + invContent[i].inputId).val('');
+						$('body /deep/ #addInvMsg').html('Successfully added a new stock item!');
+					} else
+						$('body /deep/ #addInvMsg').html('Duplicate Model Number exists!');
 				} else {
 					for (i = 0; i < emptyLists.length; i++)
 						$('body /deep/ #' + invContent[emptyLists[i]].msgDivId).html('Please enter a value here');
 					for (i = 0; i < noIntLists.length; i++)
 						$('body /deep/ #' + invContent[noIntLists[i]].msgDivId).html('Please enter an integer value here');
+					for (i = 0; i < noFloatLists.length; i++)
+						$('body /deep/ #' + invContent[noFloatLists[i]].msgDivId).html('Please enter a float value here');	
 				}
 			});
 		});	

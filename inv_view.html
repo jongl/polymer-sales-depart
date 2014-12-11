@@ -6,37 +6,51 @@
 		<core-card id="backgroundWhite" layout vertical>
 			<div id="backgroundWrapper">
 				<h1>View / Edit Stock Items</h1>
-				<script>				
-					displayInventory();
+				<script>
+					reloadInventory();
 				</script>
 				<table>
 					<tr>
-						<template repeat="{{head in tableHeader}}">
+						<template repeat="{{head in tableHeader_items}}">
 							<th>{{head}}</th>
 						</template>
 					</tr>
 					
 					<template repeat="{{row in trimedInvArray}}">
-						<tr>
+					
+						<!-- exchange tr to var -->
+					
+						<tr id="{{tableTrIdPrefix}}{{row.model}}">
 							<td><strong>{{row.model}}</strong></td>
 							<td>{{row.manu}}</td>
-							<td>cat</td>
+							<td>{{row.cat}}</td>
 							<td>{{row.qty}}</td>
-							<td>price</td>
-							<td>edit</td>
-							<td>delete</td>
+							<td>{{row.price}}</td>
+							<td><img class="editIcon" src="{{img_editIcon}}" /></td>
+							<td>
+								<div class="delButton" onclick='deleteElemItem("{{row.model}}")'></div>
+							</td>
 						</tr>
 					</template>
 					
 				</table>
+				
+				<!-- search result empty notice -->
+				<div id="searchResultEmpty"></div>
+				
 				<div id="bTb">
 					<div id="bTb_left">
-						<input type="text" name="searchInv" id="searchInv" style="margin-right: 10px;">
+						<input type="text" name="searchInv" id="searchInv" style="margin-right: 1px;">
 						<div class="button" on-click="{{onClick_search}}">Search</div>
 					</div>
 					<div id="bTb_right">
-						<div class="button" on-click="{{onClick_prev}}">Prev</div>
-						<div class="button" on-click="{{onClick_next}}">Next</div>
+						<template if="{{!searchMod}}">
+							<div class="button" on-click="{{onClick_prev}}">Prev</div>
+							<div class="button" on-click="{{onClick_next}}">Next</div>
+						</template>
+						<template if="{{searchMod}}">
+							<div class="button" on-click="{{onClick_back}}">Back</div>
+						</template>
 					</div>
 				</div>
 			</div>
@@ -44,18 +58,60 @@
 	</template>
 	<script type="text/javascript" src="js/common.js"></script>
 	<script>
+		function deleteElemItem(key) {
+			if (confirm("Are you sure you want to delete this item?"))
+				jsonData_inv.child(key).remove();
+			
+			// 아래 폴리머를 이용해서 바로 다시 리스트를 로드해와야 할 것 같다
+		}
+		function testFunction() {
+			console.log("removed");
+		}
 		$(document).ready(function() {
-			displayInventory();
+			reloadInventory();
 		});	
 		
 		Polymer('sales-depart-inv-view', {
 			ready: function() {
-				this.tableHeader = tableHeader;
+				this.tableTrIdPrefix = tableTrIdPrefix;
+				this.tableHeader_items = tableHeader_items;
 				this.inventoryArray = inventoryArray;
 				this.pgIndex = 0;
 				this.pgInterval = pgInterval;
 				this.pgButtonNum = parseInt(this.inventoryArray.length / this.pgInterval + 1);
+				this.invContent = invContent;
+				this.invContentCheck_index = invContentCheck_index;
+				this.invContentCheck_key = invContentCheck_key;
 				this.trimInvArray();
+				
+				/***********************************
+					fix this
+					1. 우선 지워진 상태이다
+					2. inventoryArray를 reload 한다
+					3. trim을 한 다음에 다시 display... <- 여기가 문제인듯
+				***********************************/
+				//this.dataRemoved();
+				jsonData_inv.on('child_removed', function(snapshot) {
+					//console.log("dd");
+					//console.log("removed");
+					//testFunction();
+					//$.trimInvArray();
+				});
+				
+				jsonData_inv.on('child_added', function(snapshot) {
+					console.log(document.querySelector("sales-depart-inv-view"));
+				});
+				
+				this.img_editIcon = imgs.inv_icon_inventory;
+				this.searchMod = false;
+			},
+			dataRemoved: function () {
+				
+				console.log("delete");
+				reloadInventory(); // reload array
+				this.invContent = invContent;
+				//this.trimInvArray(); // 다시 load를 해야하는데 문제가 있는 것 같다... ready 상태에서 function이 로드 안되나?
+				
 			},
 			onClick_prev: function() {
 				if (this.pgIndex > 0)
@@ -66,43 +122,49 @@
 				this.searchValue = document.querySelector("body /deep/ #searchInv").value;
 				this.searchInvArray_model();
 			},
-			onClick_num: function() {
-				//if ((this.pgIndex >= 0) || (this.pgIndex <= this.pgButtonNum - 1))
-					//this.trimInvArray();
-			},
 			onClick_next: function() {
 				if (this.pgIndex < this.pgButtonNum - 1)
 					this.pgIndex = this.pgIndex + 1;
 				this.trimInvArray();
 			},
+			onClick_back: function() {
+				//document.querySelector("body /deep/ #searchInv").val('');
+				this.searchMod = false;
+				this.pgIndex = 0;
+				this.trimInvArray();
+			},
+			/*
+			// worth to keep it???????????????????????????????????????
+			setEmptySearchResult: function(str) {
+				$("body /deep/ #searchResultEmpty").html(str);
+			},*/
 			searchInvArray_model: function() {
-				this.trimedInvArray = [];
-				var i = 0;
+				this.trimedInvArray = new Array();
+				var key = this.invContent[this.invContentCheck_index][this.invContentCheck_key];
 				
-				for (j = 0; j < this.inventoryArray.length; j++)
-					if (this.inventoryArray[j].model == this.searchValue) {
-						this.trimedInvArray[i] = this.inventoryArray[j];
-						i++;
-					}
+				for (j = 0; j < this.inventoryArray.length; j++) {
+					if (this.inventoryArray[j].model == this.searchValue
+						&& !checkDupKey(this.trimedInvArray, key, this.inventoryArray[j][key]))
+						this.trimedInvArray.push(this.inventoryArray[j]);
+				}
+				this.searchMod = true;
 			},
 			trimInvArray: function() {
-				console.log(this.inventoryArray);
-				this.trimedInvArray = [];
+				this.trimedInvArray = new Array();
 				var starting = this.pgIndex * this.pgInterval;
 				var ending = (this.pgIndex + 1) * this.pgInterval - 1;
 				var max = this.inventoryArray.length;
+				var key = this.invContent[this.invContentCheck_index][this.invContentCheck_key];
 				
 				if (starting <= max) {
 					if (ending > max)
 						ending = max;
-					var i = 0;
 					
 					for (j = starting; j < ending; j++) {
-						this.trimedInvArray[i] = this.inventoryArray[j];
-						i++;
+						if (!checkDupKey(this.trimedInvArray, key, this.inventoryArray[j][key]))
+							this.trimedInvArray.push(this.inventoryArray[j]);
 					}
 				}
-				console.log(this.trimedInvArray);
 			}
 		});
 	</script>

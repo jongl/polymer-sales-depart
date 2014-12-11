@@ -52,6 +52,9 @@
 .mainPage_container_hr {
 	margin-bottom: 10px;
 }
+.mainPage_container_hr:last-of-type {
+	display: none;
+}
 /*
 .mainPage_container_wrapperBottom:last-child {
 	display: none;
