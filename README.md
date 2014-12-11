@@ -4,6 +4,13 @@ Front-end development using Polymer, JSON(Firebase), HTML, CSS, and Javascript
 
 Developer: Jong Seong Lee
 
+<strong>12/11/2014</strong>
+<ul>
+	<li>Manufacturer added</li>
+	<li>Delete functions added</li>
+	<li>Need to work on some details and edit features</li>
+</ul>
+
 <strong>12/03/2014</strong>
 <ul>
 	<li>Finished redistributing codes to distinct files</li>
