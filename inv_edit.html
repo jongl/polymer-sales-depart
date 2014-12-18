@@ -1,4 +1,4 @@
-<polymer-element name="sales-depart-inv-add">
+<polymer-element name="sales-depart-inv-edit">
 	<template>
 		<link rel="stylesheet" type="text/css" href="css/inventory.css">
 		<link rel="stylesheet" type="text/css" href="css/common.css">
@@ -7,34 +7,34 @@
 			<div id="backgroundWrapper">
 				<h1>Add a New Stock Item</h1>
 					
-					<template repeat="{{inv in invContent}}">
-						<template if="{{inv.inputType == 'string'}}">
-							<label class="invInputLabel">{{inv.label}}</label>
-							<input type="text" id="{{inv.inputId}}" placeholder="{{inv.placeholder}}">
-							<div id="{{inv.msgDivId}}" class="invInputMsg"></div>
+					<template repeat="{{cell in editContent}}">
+						<template if="{{cell.inputType == 'string'}}">
+							<label class="invInputLabel">{{cell.label}}</label>
+							<input type="text" id="{{cell.inputId}}" placeholder="{{cell.placeholder}}">
+							<div id="{{cell.msgDivId}}" class="invInputMsg"></div>
 						</template>
-						<template if="{{inv.inputType == 'integer' || inv.inputType == 'float'}}">
-							<label class="invInputLabel">{{inv.label}}</label>
-							<input type="number" id="{{inv.inputId}}" placeholder="{{inv.placeholder}}">
-							<div id="{{inv.msgDivId}}" class="invInputMsg"></div>
+						<template if="{{cell.inputType == 'integer' || cell.inputType == 'float'}}">
+							<label class="invInputLabel">{{cell.label}}</label>
+							<input type="number" id="{{cell.inputId}}" placeholder="{{cell.placeholder}}">
+							<div id="{{cell.msgDivId}}" class="invInputMsg"></div>
 						</template>
-						<template if="{{inv.inputType == 'textarea'}}">
-							<label class="invInputLabel" style="vertical-align: top; margin-top: 8px;">{{inv.label}}</label>
-							<textarea id="{{inv.inputId}}" rows="8" cols="50" placeholder="{{inv.placeholder}}"></textarea>
-							<div id="{{inv.msgDivId}}" class="invInputMsg" style="vertical-align: top; margin-top: 8px;"></div>
+						<template if="{{cell.inputType == 'textarea'}}">
+							<label class="invInputLabel" style="vertical-align: top; margin-top: 8px;">{{cell.label}}</label>
+							<textarea id="{{cell.inputId}}" rows="8" cols="50" placeholder="{{cell.placeholder}}"></textarea>
+							<div id="{{cell.msgDivId}}" class="invInputMsg" style="vertical-align: top; margin-top: 8px;"></div>
 						</template>
 						<br/>
 					</template>
 					
 					<div class="button" on-click="{{onClick}}">Add a New Item</div>
-					<div id="addInvMsg" class="invInputMsg"></div>
+					<div id="submitEditMsg" class="invInputMsg"></div>
 			</div>
 		</core-card>
 	</template>
 	<script type="text/javascript" src="js/common.js"></script>
 	<script>
 		$(document).ready(function() {
-			this.addEventListener('buttonClick', function(e) {
+			this.addEventListener('buttonClick', function(e) {/*
 				var userInputs = new Array();
 				var userInput;
 				var isEmpty;
@@ -43,7 +43,7 @@
 				var noFloatLists = new Array();
 				var modelNoCheck;
 				
-				$('body /deep/ #addInvMsg').html('');
+				$('body /deep/ #submitEditMsg').html('');
 				
 				for (i = 0; i < invContent.length; i++) {
 					userInput = $('body /deep/ #' + invContent[i].inputId).val();
@@ -79,9 +79,9 @@
 						
 						for (i = 0; i < invContent.length; i++) //empty fields
 							$('body /deep/ #' + invContent[i].inputId).val('');
-						$('body /deep/ #addInvMsg').html('Successfully added a new stock item!');
+						$('body /deep/ #submitEditMsg').html('Successfully added a new stock item!');
 					} else
-						$('body /deep/ #addInvMsg').html('Duplicate Model Number exists!');
+						$('body /deep/ #submitEditMsg').html('Duplicate Model Number exists!');
 				} else {
 					for (i = 0; i < emptyLists.length; i++)
 						$('body /deep/ #' + invContent[emptyLists[i]].msgDivId).html('Please enter a value here');
@@ -89,13 +89,13 @@
 						$('body /deep/ #' + invContent[noIntLists[i]].msgDivId).html('Please enter an integer value here');
 					for (i = 0; i < noFloatLists.length; i++)
 						$('body /deep/ #' + invContent[noFloatLists[i]].msgDivId).html('Please enter a float value here');	
-				}
+				}*/
 			});
 		});	
 		
-		Polymer('sales-depart-inv-add', {
+		Polymer('sales-depart-inv-edit', {
 			ready: function() {
-				this.invContent = invContent;
+				this.editContent = editContent;
 			},
 			onClick: function() {
 				this.fire('buttonClick');

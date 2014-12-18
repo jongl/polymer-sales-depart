@@ -20,15 +20,16 @@
 					
 						<!-- exchange tr to var -->
 					
-						<tr id="{{tableTrIdPrefix}}{{row.model}}">
+						<tr id="{{tableTrIdPrefix}}{{row.key}}">
 							<td><strong>{{row.model}}</strong></td>
 							<td>{{row.manu}}</td>
 							<td>{{row.cat}}</td>
 							<td>{{row.qty}}</td>
 							<td>{{row.price}}</td>
+							<td>{{row.date}}</td>
 							<td><img class="editIcon" src="{{img_editIcon}}" /></td>
 							<td>
-								<div class="delButton" onclick='deleteElemItem("{{row.model}}")'></div>
+								<div class="delButton" onclick='deleteElemItem("{{row.key}}")'></div>
 							</td>
 						</tr>
 					</template>
@@ -59,13 +60,15 @@
 	<script type="text/javascript" src="js/common.js"></script>
 	<script>
 		function deleteElemItem(key) {
-			if (confirm("Are you sure you want to delete this item?"))
+			if (confirm("Are you sure you want to delete this item?")) {
 				jsonData_inv.child(key).remove();
-			
+				reloadInventory();
+				$('body /deep/' + '#' + tableTrIdPrefix + key).hide();
+				
+				// 여기서는 page index를 다시 업데이트 해줘야 한다
+			}
 			// 아래 폴리머를 이용해서 바로 다시 리스트를 로드해와야 할 것 같다
-		}
-		function testFunction() {
-			console.log("removed");
+			
 		}
 		$(document).ready(function() {
 			reloadInventory();
@@ -75,14 +78,14 @@
 			ready: function() {
 				this.tableTrIdPrefix = tableTrIdPrefix;
 				this.tableHeader_items = tableHeader_items;
-				this.inventoryArray = inventoryArray;
 				this.pgIndex = 0;
 				this.pgInterval = pgInterval;
-				this.pgButtonNum = parseInt(this.inventoryArray.length / this.pgInterval + 1);
+				this.pgButtonNum = parseInt(inventoryArray.length / (this.pgInterval + 1));
 				this.invContent = invContent;
 				this.invContentCheck_index = invContentCheck_index;
 				this.invContentCheck_key = invContentCheck_key;
 				this.trimInvArray();
+				this.manuContentKey_model = manuContentKey_model;
 				
 				/***********************************
 					fix this
@@ -90,42 +93,28 @@
 					2. inventoryArray를 reload 한다
 					3. trim을 한 다음에 다시 display... <- 여기가 문제인듯
 				***********************************/
-				//this.dataRemoved();
 				jsonData_inv.on('child_removed', function(snapshot) {
-					//console.log("dd");
-					//console.log("removed");
-					//testFunction();
-					//$.trimInvArray();
+					
+					//this.pgButtonNum = parseInt(inventoryArray.length / (this.pgInterval + 1));
 				});
-				
-				jsonData_inv.on('child_added', function(snapshot) {
-					console.log(document.querySelector("sales-depart-inv-view"));
-				});
-				
 				this.img_editIcon = imgs.inv_icon_inventory;
 				this.searchMod = false;
 			},
-			dataRemoved: function () {
-				
-				console.log("delete");
-				reloadInventory(); // reload array
-				this.invContent = invContent;
-				//this.trimInvArray(); // 다시 load를 해야하는데 문제가 있는 것 같다... ready 상태에서 function이 로드 안되나?
-				
-			},
+			
 			onClick_prev: function() {
-				if (this.pgIndex > 0)
+				if (this.pgIndex > 0) {
 					this.pgIndex = this.pgIndex - 1;
-				this.trimInvArray();
+					this.trimInvArray();
+				}
 			},
 			onClick_search: function() {
-				this.searchValue = document.querySelector("body /deep/ #searchInv").value;
-				this.searchInvArray_model();
+				this.searchInvArray_model(document.querySelector("body /deep/ #searchInv").value);
 			},
 			onClick_next: function() {
-				if (this.pgIndex < this.pgButtonNum - 1)
+				if (this.pgIndex < this.pgButtonNum) {
 					this.pgIndex = this.pgIndex + 1;
-				this.trimInvArray();
+					this.trimInvArray();
+				}
 			},
 			onClick_back: function() {
 				//document.querySelector("body /deep/ #searchInv").val('');
@@ -138,33 +127,24 @@
 			setEmptySearchResult: function(str) {
 				$("body /deep/ #searchResultEmpty").html(str);
 			},*/
-			searchInvArray_model: function() {
-				this.trimedInvArray = new Array();
-				var key = this.invContent[this.invContentCheck_index][this.invContentCheck_key];
-				
+			searchInvArray_model: function(searchVal) {
+				var key = this.manuContentKey_model;
+				/*
 				for (j = 0; j < this.inventoryArray.length; j++) {
-					if (this.inventoryArray[j].model == this.searchValue
+					if (this.inventoryArray[j].model == searchVal
 						&& !checkDupKey(this.trimedInvArray, key, this.inventoryArray[j][key]))
 						this.trimedInvArray.push(this.inventoryArray[j]);
-				}
+				}*/
+				this.trimedInvArray = searchArr(searchVal, inventoryArray, key);
 				this.searchMod = true;
 			},
 			trimInvArray: function() {
-				this.trimedInvArray = new Array();
 				var starting = this.pgIndex * this.pgInterval;
-				var ending = (this.pgIndex + 1) * this.pgInterval - 1;
-				var max = this.inventoryArray.length;
-				var key = this.invContent[this.invContentCheck_index][this.invContentCheck_key];
+				var ending = ((this.pgIndex + 1) * this.pgInterval) - 1;
+				var max = inventoryArray.length - 1;
+				var key = manuContentKey_model;
 				
-				if (starting <= max) {
-					if (ending > max)
-						ending = max;
-					
-					for (j = starting; j < ending; j++) {
-						if (!checkDupKey(this.trimedInvArray, key, this.inventoryArray[j][key]))
-							this.trimedInvArray.push(this.inventoryArray[j]);
-					}
-				}
+				this.trimedInvArray = trimArray(this.trimedInvArray, inventoryArray, starting, ending, key, max);
 			}
 		});
 	</script>

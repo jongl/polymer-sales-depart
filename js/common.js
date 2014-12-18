@@ -5,12 +5,46 @@ var intRegex;
 var floatRegex;
 var inventoryArray;
 var manuArray;
+var editElem;
+var editContent;
+
+function searchArr(searchVal, srcArr, key) {
+	var tempArr = new Array();
+	
+	for (i = 0; i < srcArr.length; i++) {
+		if (srcArr[i][key] == searchVal
+			&& !checkDupKey(tempArr, key, srcArr[i][key]))
+			tempArr.push(srcArr[i]);
+	}
+	return tempArr;
+}
+
+function loadEditPage(elm, content, pg) {
+	editElem = elm;
+	editContent = content;
+	switchPage(pg);
+}
 
 function reloadInventory() {
 	inventoryArray = new Array();
 	jsonData_inv.on('child_added', function(snapshot) {
-		loadAray(snapshot.val(), inventoryArray, invContent, invContentCheck_key);
+		loadArray(snapshot.val(), inventoryArray, invContent, invContentCheck_key);
 	});
+	
+	jsonData_inv.on('child_removed', function(snapshot) {
+		loadArray(snapshot.val(), inventoryArray, invContent, invContentCheck_key);
+	});
+}
+
+function getHourMinSec() {
+	var date = new Date();
+	var hour = date.getHours().toString();
+	var min = date.getMinutes().toString();
+	var sec = date.getSeconds().toString();
+	var hourChars = hour.split('');
+	var minChars = min.split('');
+	var secChars = sec.split('');
+	return (hourChars[1] ? hour: "0" + hourChars[0]) + '-' + (minChars[1] ? min: "0" + minChars[0]) + '-' + (secChars[1] ? sec: "0" + secChars[0]);
 }
 
 function getDateStr() {
@@ -26,11 +60,15 @@ function getDateStr() {
 function reloadManu() {
 	manuArray = new Array();
 	jsonData_manu.on('child_added', function(snapshot) {
-		loadAray(snapshot.val(), manuArray, manuContent, manuContentCheck_key);
+		loadArray(snapshot.val(), manuArray, manuContent, manuContentCheck_key);
+	});
+	
+	jsonData_manu.on('child_removed', function(snapshot) {
+		loadArray(snapshot.val(), manuArray, manuContent, manuContentCheck_key);
 	});
 }
 
-function loadAray(message, targetArr, contentArr, checkKey) {
+function loadArray(message, targetArr, contentArr, checkKey) {
 	var temp = new Array();
 	var key;
 	
@@ -38,6 +76,18 @@ function loadAray(message, targetArr, contentArr, checkKey) {
 		key = contentArr[i][checkKey];
 		temp[key] = message[key];
 	}
+	
+	
+	for (j = 0; j < commonContent.length; j++) {
+		key = commonContent[j][commonContentCheck_key];
+		temp[key] = message[key];
+	}
+	
+	
+	// 여기에 common attribute 추가
+	//
+	//commonContent
+	
 	targetArr.push(temp);
 }
 
@@ -51,6 +101,26 @@ function checkDupKey(targetArr, key, elem) {
 			i++;
 	}
 	return check;
+}
+
+function trimArray(targetArr, srcArr, startIdx, endingIdx, key, max) {
+	targetArr = new Array();
+	//var starting = this.pgIndex * this.pgInterval;
+	//var ending = (this.pgIndex + 1) * this.pgInterval - 1;
+	//var max = this.inventoryArray.length;
+	//var key = this.invContent[this.invContentCheck_index][this.invContentCheck_key];
+
+	if (startIdx <= max) {
+		if (endingIdx > max)
+			endingIdx = max;
+		
+		for (j = startIdx; j <= endingIdx; j++) {
+			if (!checkDupKey(targetArr, key, srcArr[j][key]))
+				targetArr.push(srcArr[j]);
+		}
+	}
+	
+	return targetArr;
 }
 
 /*
@@ -100,6 +170,8 @@ $(document).ready(function() {
 						]
 					}];
 	
+	tableTrIdPrefix = 'tr';
+	
 	invContent = [ { label: 'Model No.', inputId: 'model', key: 'model', inputType: 'string', placeholder: 'Model No.', msgDivId: 'invInputMsg_model' },
 				   { label: 'Manufacturer', inputId: 'manu', key: 'manu', inputType: 'string', placeholder: 'Manufacturer', msgDivId: 'invInputMsg_manu' },
 				   { label: 'Category', inputId: 'cat', key: 'cat', inputType: 'string', placeholder: 'Category', msgDivId: 'invInputMsg_cat' },
@@ -109,22 +181,33 @@ $(document).ready(function() {
 			     ];
 	invContentCheck_index = 0;
 	invContentCheck_key = 'key';
+	manuContentKey_model = invContent[0][invContentCheck_key];
 	
-	tableTrIdPrefix = 'tr';
+	// work on fixing invContent first and apply to manuContent
+	commonContent = [ { label: 'Date', inputId: 'date', key: 'date', inputType: 'date', placeholder: 'Date', msgDivId: 'manuInputMsg_date' },
+				      { label: 'Key', inputId: 'key', key: 'key', inputType: 'string', placeholder: 'Key', msgDivId: 'manuInputMsg_key' },
+				    ];
+	commonContentCheck_key = 'key';
+	commonContentKey_date = commonContent[0][commonContentCheck_key];
+	commonContentKey_key = commonContent[1][commonContentCheck_key];
 	
-	tableHeader_items = [ 'Model No.', 'Manufacturer', 'Category', 'Qty.', 'Price', 'Edit', 'Delete' ];
-		
-	manuContent = [ { label: 'Manufacturer', inputId: 'manu', key: 'manu', inputType: 'string', placeholder: 'Manufacturer', msgDivId: 'manuInputMsg_manu' },
-				    { label: 'Date', inputId: 'date', key: 'date', inputType: 'date', placeholder: 'Date', msgDivId: 'manuInputMsg_date' },
-				    { label: 'Key', inputId: 'key', key: 'key', inputType: 'string', placeholder: 'Key', msgDivId: 'manuInputMsg_key' },
+	tableHeader_items = [ 'Model No.', 'Manufacturer', 'Category', 'Qty.', 'Price', 'Date', 'Edit', 'Delete' ];
+	
+
+
+	// common fix for manu content!!!!!!!!!!!!!!!!!!!
+
+
+
+	
+	manuContent = [ { label: 'Manufacturer', inputId: 'manu', key: 'manu', inputType: 'string', placeholder: 'Manufacturer', msgDivId: 'manuInputMsg_manu' }
 				  ];
 	manuContentCheck_index = 0;
 	manuContentCheck_key = 'key';
-	manuContentKey_date = manuContent[1][manuContentCheck_key];
-	manuContentKey_key = manuContent[2][manuContentCheck_key];
+	manuContentKey_manu = manuContent[0][manuContentCheck_key];
 	
 	tableHeader_manu = [ 'Manufacturer', 'Date', 'Edit', 'Delete' ];
-	pgInterval = 20;
+	pgInterval = 10;
 	
 	jsonData_inv = new Firebase('https://inventories.firebaseio.com/items');
 	jsonData_cat = new Firebase('https://inventories.firebaseio.com/cats');

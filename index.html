@@ -51,6 +51,7 @@
 				});
 				
 				function switchPage(loc) {
+					salesDepart.prevPg = salesDepart.currPg;
 					salesDepart.currPg = loc;
 				}
 				Polymer('sales-depart', {

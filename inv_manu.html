@@ -8,19 +8,23 @@
 				<div id="bTb">
 					<div id="bTb_left">
 						<h2>Find a Manufacturer</h2>
-						<input type="text"></input>
+						<input type="text" id="searchManu"></input>
 						
 						<div class="button" on-click="{{onClick_search}}">Search</div>
 					</div>
 					<div id="bTb_right">
-							<h2>Add a New Manufacturer</h2>
-							<input type="text" id="manuInput"></input>
-							
-							<div class="button" on-click="{{onClick_add}}">Add a New Item</div>
+						<template if="{{!searchMod}}">
+								<h2>Add a New Manufacturer</h2>
+								<input type="text" id="manuInput"></input>
+								<div class="button" on-click="{{onClick_add}}">Add a New Item</div>
+						</template>
+						<template if="{{searchMod}}">
+							<div class="button" on-click="{{onClick_back}}">Back</div>
+						</template>
 					</div>
 				</div>
 				<div>
-					<table>
+					<table id="table_manu">
 						<tr>
 							<template repeat="{{head in tableHeader_manu}}">
 								<th>{{head}}</th>
@@ -28,10 +32,10 @@
 						</tr>
 						<!-- template repeats the result -->
 						<template repeat="{{row in trimedManuArray}}">
-							<tr>
+							<tr id="{{tableTrIdPrefix}}{{row.key}}">
 								<td><strong>{{row.manu}}</strong></td>
 								<td>{{row.date}}</strong></td>
-								<td><img class="editIcon" src="{{img_editIcon}}" /></td>
+								<td><img class="editIcon" src="{{img_editIcon}}" onclick="loadEditPage(row, 'inv_edit')"/></td>
 								<td>
 									<div class="delButton" onclick='deleteElemManu("{{row.key}}", "{{row.manu}}")'></div>
 								</td>
@@ -45,22 +49,24 @@
 	
 	<script type="text/javascript" src="js/common.js"></script>
 	<script>
+		function editManu(elm, pg) {
+			loadEditPage(elm, manuContent, pg);
+		}
+		
 		function deleteElemManu(key, name) {
 			if (confirm("Are you sure you want to delete this manufacturer? This will delete all inventory items belong to this manufacturer.")) {
 				jsonData_manu.child(key).remove();
 				deleteItemsByManu(name);
+				reloadManu();
+				$('body /deep/' + '#' + tableTrIdPrefix + key).hide();
 			}
-			// 아래 폴리머를 이용해서 바로 다시 리스트를 로드해와야 할 것 같다
-			// 지우는 경우 단순히 manu 뿐만 아니라 item list에서도 찾아서 지워야 할 것 같다
 		}
 		
-		//!!!!!!!!!!!!!!! need to fix here after inventory revision
 		function deleteItemsByManu(name) {
 			inventoryArray.forEach( function (entry) {
-				console.log(entry); // 각 entry는 manu 값이 있다
 				if (entry.manu == name) 
 					jsonData_inv.child(entry.model).remove();
-			});
+			}); 
 			
 			// reload
 		}
@@ -73,20 +79,45 @@
 			this.addEventListener('addButtonClick', function(e) {
 				var userInput = $('body /deep/ #manuInput').val();
 				var tempArr = new Array();
-				
+				var dateStr = getDateStr();
+				var key = dateStr + '-' + getHourMinSec();
 				
 				if (userInput.length > 0) {
-					var dateStr = getDateStr();
-					var key = userInput + dateStr;
-					tempArr[manuContent[0][manuContentCheck_key]] = userInput;
-					tempArr[manuContentKey_date] = dateStr;
-					tempArr[manuContentKey_key] = key;
-					
-					jsonData_manu.push();
-					jsonData_manu.child(key).set(tempArr);
-					console.log('added');
+					if (!checkDupKey(manuArray, manuContentKey_manu, userInput)) {
+						
+						tempArr[manuContentKey_manu] = userInput;
+						tempArr[commonContentKey_date] = dateStr;
+						tempArr[commonContentKey_key] = key;
+						
+						jsonData_manu.push();
+						jsonData_manu.child(key).set(tempArr);
+							
+						var table = document.querySelector('body /deep/ #table_manu');
+						var rowCount = table.rows.length;
+						var row = table.insertRow(rowCount);
+						
+						var strDiv = document.createElement("strong");
+						strDiv.appendChild(document.createTextNode(userInput));
+						
+						var delDiv = document.createElement("div");
+						delDiv.className = "delButton";
+						delDiv.onclick = function() { deleteElemManu(key, userInput) };
+						
+						var editDiv = document.createElement("img");
+						editDiv.className = "editIcon";
+						editDiv.src = imgs.inv_icon_inventory;
+						
+						row.insertCell(0).appendChild(strDiv);
+						row.insertCell(1).appendChild(document.createTextNode(dateStr));
+						row.insertCell(2).appendChild(editDiv);
+						row.insertCell(3).appendChild(delDiv);
+						$('body /deep/ #manuInput').val('');
+						alert('Successfully added a new manufacturer!');
+					} else
+						alert('Duplicate manufacturer name!');
 				} else
-					console.log('no input');
+					alert('Please enter an input!');
+				
 				// get 
 				
 				// check for dup key
@@ -94,15 +125,6 @@
 				
 				// 구조가 이걸론 안되겠다...?
 				// 제조사를 지우게 되면 어떻게 되는건가?
-				
-				
-				// ***************
-				// *************** add hour and min and make key date + time + manu
-				// *************** make time function separately
-				// ***************
-				
-				// *************** check for trimed array, it generates the first elem as undef
-				// *************** maybe because it is a child?
 				
 				//checkDupKey(inventoryArray, invContent[invContentCheck_index][invContentCheck_key], modelNoCheck))
 				
@@ -112,22 +134,33 @@
 			ready: function() {
 				this.img_editIcon = imgs.inv_icon_inventory;
 				this.tableHeader_manu = tableHeader_manu;
-				this.manuArray = manuArray;
-				this.manuContent = manuContent;
-				this.manuContentCheck_index = manuContentCheck_index;
-				this.manuContentCheck_key = manuContentCheck_key;
+				this.searchMod = false;
+				this.tableTrIdPrefix = tableTrIdPrefix;
 				this.trimManuArray();
 			},
 			trimManuArray: function() {
 				this.trimedManuArray = new Array();
-				var key = this.manuContent[this.manuContentCheck_index][this.manuContentCheck_key];
+				var key = manuContentKey_manu;
 				
-				for (i = 0; i < this.manuArray.length; i++)
-					if (!checkDupKey(this.trimedManuArray, key, this.manuArray[i][key]))
-						this.trimedManuArray.push(this.manuArray[i]);
+				for (i = 0; i < manuArray.length; i++)
+					if (!checkDupKey(this.trimedManuArray, key, manuArray[i][key]))
+						this.trimedManuArray.push(manuArray[i]);
 			},
 			onClick_add: function() {
 				this.fire('addButtonClick');
+			},
+			onClick_search: function() {
+				this.searchManuArray_manu(document.querySelector("body /deep/ #searchManu").value);
+			},
+			onClick_back: function() {
+				this.searchMod = false;
+				this.trimManuArray();
+			},
+			searchManuArray_manu: function(searchVal) {
+				var key = manuContentKey_manu;
+				
+				this.trimedManuArray = searchArr(searchVal, manuArray, key);
+				this.searchMod = true;
 			}
 		});
 	</script>
